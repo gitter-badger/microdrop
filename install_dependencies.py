@@ -169,26 +169,19 @@ if __name__ == "__main__":
               ("nose-pathmunge", "pip"),
               ("pymunk", "exe", "http://pymunk.googlecode.com/files/pymunk-2.1.0.win32.exe"),
               ("pylint", "pip", "http://download.logilab.org/pub/pylint/pylint-0.25.1.tar.gz"),
-              ("constraint", "pip", "https://github.com/cfobel/python___labix_constraint/tarball/master"),
-              ("jsonrpc", "pip", "https://github.com/cfobel/python-jsonrpc/tarball/master"),
+              ("constraint", "pip", "https://github.com/cfobel/python___labix_constraint/tarball/ff820642d684cff47605ded26d9719184179e347"),
+              ("jsonrpc", "pip", "https://github.com/wheeler-microfluidics/application_repository.jsonrpc/tarball/79de4e0cde0fe038eb4b5f1090aa931071cd25da"),
+              ("opencv_helpers", "pip", "https://github.com/cfobel/opencv_helpers/tarball/0098489221f19543a80992cc54952b9d0566ee56"),
+              ("pygst_utils", "pip", "http://microfluidics.utoronto.ca/git/python___pygst_utils.git/snapshot/b551609450e867422fb896b7b20f14550b53fceb.zip"),
+              ("pygst_utils_windows_server", "pip", "http://microfluidics.utoronto.ca/downloads/pygst_utils_windows_server-0.1.15.tar.gz"),
+              ("geo_util", "pip", "https://github.com/cfobel/python___geo_util/tarball/6815c002d0dcd256ab1f9beb3844612f57d6661c"),
+              ("pygtkhelpers", "pip", "https://github.com/cfobel/pygtkhelpers/"\
+                    "tarball/pre_object_tree"),
               ):
         try:
             exec("import " + p[0])
         except:
             packages.append(p)
-
-    # Force the upgrade installation of the following packages.
-    # package name, type, url
-    for p in (
-            ("opencv_helpers", "pip", "https://github.com/cfobel/"\
-                    "python___opencv_examples/tarball/master"),
-            ("pygst_utils", "pip", "http://microfluidics.utoronto.ca/git/python___pygst_utils.git/snapshot/b551609450e867422fb896b7b20f14550b53fceb.zip"),
-            ("pygst_utils_windows_server", "pip", "http://microfluidics.utoronto.ca/downloads/pygst_utils_windows_server-0.1.15.tar.gz"),
-            ("geo_util", "pip", "https://github.com/cfobel/python___geo_util/"\
-                    "tarball/master"),
-            ("pygtkhelpers", "pip", "https://github.com/cfobel/pygtkhelpers/"\
-                    "tarball/pre_object_tree")):
-        packages.append(p)
 
     # python 2.7 specific packages
     if PYTHON_VERSION=="2.7":
