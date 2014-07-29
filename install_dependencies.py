@@ -170,7 +170,7 @@ if __name__ == "__main__":
               ("pymunk", "exe", "http://pymunk.googlecode.com/files/pymunk-2.1.0.win32.exe"),
               ("pylint", "pip", "http://download.logilab.org/pub/pylint/pylint-0.25.1.tar.gz"),
               ("constraint", "pip", "https://github.com/cfobel/python___labix_constraint/tarball/ff820642d684cff47605ded26d9719184179e347"),
-              ("jsonrpc", "pip", "https://github.com/wheeler-microfluidics/application_repository.jsonrpc/tarball/79de4e0cde0fe038eb4b5f1090aa931071cd25da"),
+              ("jsonrpc", "pip", "https://pypi.python.org/packages/source/a/application_repository.jsonrpc/application_repository.jsonrpc-0.1.tar.gz"),
               ("opencv_helpers", "pip", "https://github.com/cfobel/opencv_helpers/tarball/0098489221f19543a80992cc54952b9d0566ee56"),
               ("pygst_utils", "pip", "http://microfluidics.utoronto.ca/git/python___pygst_utils.git/snapshot/b551609450e867422fb896b7b20f14550b53fceb.zip"),
               ("pygst_utils_windows_server", "pip", "http://microfluidics.utoronto.ca/downloads/pygst_utils_windows_server-0.1.15.tar.gz"),
