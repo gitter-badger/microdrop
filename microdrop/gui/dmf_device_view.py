@@ -33,7 +33,7 @@ from pygtkhelpers.utils import gsignal
 from pygtkhelpers.delegates import SlaveView
 from opencv_helpers.registration_dialog import RegistrationDialog, cv
 from microdrop_utility.gui import text_entry_dialog
-from microdrop_utility import is_float
+from microdrop_utility import is_float, wrap_string
 
 from ..app_context import get_app
 from ..logger import logger
@@ -167,6 +167,10 @@ class DmfDeviceView(GtkVideoView):
         self.pixmap = None
         self._proxy = None
         self._set_window_title = False
+        self._most_recent_electrode_pressed = None
+        self._most_recent_electrode_level = None
+        self._most_recent_electrode_new_level = None
+        self._most_recent_x = None
 
         self.svg_space = None
         self.view_space = None
@@ -273,6 +277,41 @@ class DmfDeviceView(GtkVideoView):
                 self._proxy = None
                 print '  --- CLOSED ---'
 
+    def on_device_area__motion_notify_event(self, widget, event, *args):
+        app = get_app()
+        if event.is_hint:
+            x, y, state = event.window.get_pointer()
+        else:
+            x = event.x
+            state = event.state
+
+        electrode = self.get_clicked_electrode(event)
+        if electrode:
+            app = get_app()
+            app.main_window_controller.label_electrode_channel.set_markup(
+                wrap_string('Electrode channels: %s' % electrode.channels, 60,
+                            "\n\t"))
+
+        if (state & gtk.gdk.BUTTON1_MASK and
+                self._most_recent_electrode_pressed):
+            new_level = (self._most_recent_electrode_level + x -
+                         self._most_recent_x)
+            value = min(max(0, new_level), 100)
+            self._most_recent_electrode_new_level = value
+
+            app.main_window_controller.label_electrode_level.set_markup(
+                wrap_string('Electrode level: %s' % value, 60, "\n\t"))
+        elif electrode:
+            options = self.controller.get_step_options()
+            value = options.state_of_channels[electrode.channels[0]]
+            app.main_window_controller.label_electrode_level.set_markup(
+                wrap_string('Electrode level: %s' % value, 60, "\n\t"))
+        else:
+            app.main_window_controller.label_electrode_level.set_markup(
+                wrap_string('', 60, "\n\t"))
+
+        return True
+
     def on_device_area__realize(self, widget, *args):
         self.on_realize(widget)
 
@@ -310,28 +349,70 @@ class DmfDeviceView(GtkVideoView):
         Modifies state of channel based on mouse-click.
         '''
         self.widget.grab_focus()
+        options = self.controller.get_step_options()
         # Determine which electrode was clicked (if any)
         electrode = self.get_clicked_electrode(event)
         if electrode:
+            self._most_recent_electrode_pressed = electrode
+            self._most_recent_electrode_level = (options.state_of_channels
+                                                 [electrode.channels[0]])
+            self._most_recent_x = event.x
+        return True
+
+    def on_device_area__button_release_event(self, widget, event):
+        self.widget.grab_focus()
+        # Determine which electrode was clicked (if any)
+        electrode = self.get_clicked_electrode(event)
+        if (electrode == self._most_recent_electrode_pressed and event.x ==
+                self._most_recent_x):
+            # Assume mouse hasn't moved during button press-and-release, so
+            # register as a click.
             self.on_electrode_click(electrode, event)
+        else:
+            # Mouse was dragged from original position, so register as a
+            # drag.
+            self.on_electrode_drag(self._most_recent_electrode_pressed, event,
+                                   event.x - self._most_recent_x)
         return True
 
     def on_electrode_click(self, electrode, event):
         options = self.controller.get_step_options()
         state = options.state_of_channels
         if event.button == 1:
+            # __NB__ An electrode may be connected to more than one channel.
+            # Update the state of _all_ channels connected to an electrode.
             if len(electrode.channels):
                 for channel in electrode.channels:
+                    # Toggle state of each channel.
                     if state[channel] > 0:
                         state[channel] = 0
                     else:
-                        state[channel] = 1
+                        state[channel] = 100
                 self.emit('channel-state-changed', electrode.channels[:])
             else:
                 logger.error("No channel assigned to electrode.")
         elif event.button == 3:
             self.popup.popup(state, electrode, event.button, event.time,
-                    register_enabled=self.controller.video_enabled)
+                             register_enabled=self.controller.video_enabled)
+        return True
+
+    def on_electrode_drag(self, electrode, event, delta_x):
+        options = self.controller.get_step_options()
+        if event.button == 1:
+            # __NB__ An electrode may be connected to more than one channel.
+            # Update the state of _all_ channels connected to an electrode.
+            if len(electrode.channels):
+                for channel in electrode.channels:
+                    # Set level of channel to dragged level.
+                    options.state_of_channels[channel] = (
+                        self._most_recent_electrode_new_level)
+                self.emit('channel-state-changed', electrode.channels[:])
+            else:
+                logger.error("No channel assigned to electrode.")
+        elif event.button == 3:
+            self.popup.popup(options.state_of_channels, electrode,
+                             event.button, event.time,
+                             register_enabled=self.controller.video_enabled)
         return True
 
     def on_register(self, *args, **kwargs):

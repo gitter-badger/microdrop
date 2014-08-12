@@ -85,6 +85,8 @@ class MainWindowController(SingletonPlugin):
         self.label_device_name = app.builder.get_object("label_device_name")
         self.label_protocol_name = app.builder.get_object("label_protocol_name")
         self.checkbutton_realtime_mode = app.builder.get_object("checkbutton_realtime_mode")
+        self.label_electrode_channel = app.builder.get_object("label_electrode_channel")
+        self.label_electrode_level = app.builder.get_object("label_electrode_level")
         self.menu_tools = app.builder.get_object("menu_tools")
         self.menu_view = app.builder.get_object("menu_view")
         self.menu_experiment_logs = app.builder.get_object("menu_experiment_logs")
@@ -302,8 +304,9 @@ class MainWindowController(SingletonPlugin):
     def on_dmf_device_swapped(self, old_dmf_device, dmf_device):
         self.checkbutton_realtime_mode.set_sensitive(True)
         self.menu_experiment_logs.set_sensitive(True)
-        self.update_device_name_label(dmf_device, modified= \
-                                      get_app().dmf_device_controller.modified)
+        self.update_device_name_label(dmf_device,
+                                      modified=get_app().dmf_device_controller
+                                      .modified)
 
     def on_dmf_device_changed(self):
         self.update_device_name_label(modified= \
