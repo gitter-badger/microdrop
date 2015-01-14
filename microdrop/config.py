@@ -74,8 +74,11 @@ class Config():
         enabled = string_list(default=list())
         """
 
-    def __init__(self):
-        self.filename = self.default_filename
+    def __init__(self, filename=None):
+        if filename is None:
+            self.filename = self.default_filename
+        else:
+            self.filename = filename
         self.load()
 
     def __getitem__(self, i):
@@ -96,6 +99,7 @@ class Config():
         """
         if filename:
             logger.debug("[Config].load(%f)" % filename)
+            logger.info("Loading config file from %s" % self.filename)
             if not path(filename).exists():
                 raise IOError
             self.filename = path(filename)
@@ -106,7 +110,6 @@ class Config():
             else:
                 logger.info("Using default configuration.")
 
-        logger.info("Loading config file from %s" % self.filename)
         self.data = ConfigObj(self.filename, configspec=self.spec.split("\n"))
         self._validate()
 

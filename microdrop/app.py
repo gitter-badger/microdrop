@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
 import os
 import subprocess
 import re
@@ -57,6 +58,22 @@ import gui.protocol_controller
 import gui.protocol_grid_controller
 import gui.plugin_manager_controller
 import gui.app_options_controller
+
+
+def parse_args(args=None):
+    """Parses arguments, returns (options, args)."""
+    from argparse import ArgumentParser
+
+    if args is None:
+        args = sys.argv
+
+    parser = ArgumentParser(description='MicroDrop: graphical user interface '
+                            'for the DropBot Digital Microfluidics control '
+                            'system.')
+    parser.add_argument('-c', '--config', type=path, default=None)
+
+    args = parser.parse_args()
+    return args
 
 
 def test(*args, **kwargs):
@@ -102,19 +119,24 @@ INFO:  <Plugin ProtocolGridController 'microdrop.gui.protocol_grid_controller'>
         Boolean.named('log_enabled').using( #pylint: disable-msg=E1120
             default=False, optional=True),
         Enum.named('log_level').using( #pylint: disable-msg=E1101, E1120
-            default='info', optional=True 
+            default='info', optional=True
             ).valued('debug', 'info', 'warning', 'error', 'critical'),
     )
 
     def __init__(self):
+        args = parse_args()
+
+        print 'Arguments: %s' % args
+
         self.name = "microdrop.app"
         # get the version number
         self.version = ""
         try:
-            version = subprocess.Popen(['git','describe'],
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          stdin=subprocess.PIPE).communicate()[0].rstrip()
+            version = (subprocess.Popen(['git','describe'],
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=subprocess.PIPE).communicate()[0]
+                       .rstrip())
             m = re.match('v(\d+)\.(\d+)-(\d+)', version)
             self.version = "%s.%s.%s" % (m.group(1), m.group(2), m.group(3))
         except:
@@ -143,7 +165,7 @@ INFO:  <Plugin ProtocolGridController 'microdrop.gui.protocol_grid_controller'>
         self.log_file_handler = None
 
         # config model
-        self.config = Config()
+        self.config = Config(args.config)
 
         # set the log level
         if self.name in self.config.data and \
