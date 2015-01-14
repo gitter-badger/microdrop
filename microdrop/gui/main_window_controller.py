@@ -70,15 +70,14 @@ class MainWindowController(SingletonPlugin, AppDataController):
         self.menu_tools = None
         self.menu_view = None
         gtk.link_button_set_uri_hook(self.on_url_clicked)
-        
+
         builder = gtk.Builder()
-        builder.add_from_file(os.path.join("gui",
-                              "glade",
-                              "text_input_dialog.glade"))
+        builder.add_from_file(path(__file__).parent
+                              .joinpath("glade", "text_input_dialog.glade"))
         self.text_input_dialog = builder.get_object("window")
         self.text_input_dialog.textentry = builder.get_object("textentry")
         self.text_input_dialog.label = builder.get_object("label")
-        
+
     def set_app_values(self, values_dict):
         logger.debug('[MainWindowController] set_app_values(): '\
                     'values_dict=%s' % (values_dict,))
@@ -86,9 +85,8 @@ class MainWindowController(SingletonPlugin, AppDataController):
 
     def on_plugin_enable(self):
         app = get_app()
-        app.builder.add_from_file(os.path.join("gui",
-                                               "glade",
-                                               "main_window.glade"))
+        app.builder.add_from_file(path(__file__).parent
+                                  .joinpath("glade", "main_window.glade"))
         self.view = app.builder.get_object("window")
         DEFAULTS.parent_widget = self.view
         self.label_connection_status = app.builder.get_object("label_connection_status")
@@ -113,9 +111,8 @@ class MainWindowController(SingletonPlugin, AppDataController):
         #app.signals["on_menu_debug_activate"] = self.on_menu_debug_activate
 
         self.builder = gtk.Builder()
-        self.builder.add_from_file(os.path.join("gui",
-                                                "glade",
-                                                "about_dialog.glade"))
+        self.builder.add_from_file(path(__file__).parent
+                                   .joinpath("glade", "about_dialog.glade"))
         app.main_window_controller = self
         self.protocol_list_view = None
         

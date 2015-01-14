@@ -148,9 +148,9 @@ directory)?''' % (device_directory, self.previous_device_dir))
         app = get_app()
 
         self.view.set_widget(app.builder.get_object("dmf_device_view"))
-        app.builder.add_from_file(os.path.join("gui",
-                                   "glade",
-                                   "right_click_popup.glade"))
+        app.builder.add_from_file(path(__file__).parent
+                                  .joinpath("glade",
+                                            "right_click_popup.glade"))
         self.popup = app.builder.get_object("popup")
 
         self.register_menu = gtk.MenuItem("Register device")

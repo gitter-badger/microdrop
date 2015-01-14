@@ -50,15 +50,16 @@ class ExperimentLogController(SingletonPlugin):
     Results = namedtuple('Results', ['log', 'protocol'])
 
     def __init__(self):
-        self.name = "microdrop.gui.experiment_log_controller" 
+        self.name = "microdrop.gui.experiment_log_controller"
         self.builder = gtk.Builder()
-        self.builder.add_from_file(os.path.join("gui","glade",
-            "experiment_log_window.glade"))
+        self.builder.add_from_file(path(__file__).parent
+                                   .joinpath("glade",
+                                             "experiment_log_window.glade"))
         self.window = self.builder.get_object("window")
         self.combobox_log_files = self.builder.get_object("combobox_log_files")
         self.results = self.Results(None, None)
         self.protocol_view = self.builder.get_object("treeview_protocol")
-        self.protocol_view.get_selection().set_mode(gtk.SELECTION_MULTIPLE)        
+        self.protocol_view.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.columns = [ExperimentLogColumn("Time (s)", float, "%.3f"),
                         ExperimentLogColumn("Step #", int),
                         ExperimentLogColumn("Duration (s)", float, "%.3f"),
@@ -83,10 +84,10 @@ class ExperimentLogController(SingletonPlugin):
             protocol = path(app.experiment_log.directory) / path(id) / path("protocol")
             self.results = self.Results(ExperimentLog.load(log),
                                         Protocol.load(protocol))
-            self.builder.get_object("button_load_device").set_sensitive(True)        
-            self.builder.get_object("button_load_protocol").set_sensitive(True)    
+            self.builder.get_object("button_load_device").set_sensitive(True)
+            self.builder.get_object("button_load_protocol").set_sensitive(True)
             self.builder.get_object("textview_notes").set_sensitive(True)
-            
+
             label = "Software version: "
             data = self.results.log.get("software version")
             for val in data:
@@ -180,8 +181,8 @@ class ExperimentLogController(SingletonPlugin):
             self._disable_gui_elements()
 
     def _disable_gui_elements(self):
-        self.builder.get_object("button_load_device").set_sensitive(False)        
-        self.builder.get_object("button_load_protocol").set_sensitive(False)    
+        self.builder.get_object("button_load_device").set_sensitive(False)
+        self.builder.get_object("button_load_protocol").set_sensitive(False)
         self.builder.get_object("textview_notes").set_sensitive(False)
     
     def save(self):

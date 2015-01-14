@@ -133,7 +133,9 @@ class PluginController(object):
 class PluginManagerDialog(object):
     def __init__(self):
         builder = gtk.Builder()
-        builder.add_from_file(path('gui').joinpath('glade', 'plugin_manager_dialog.glade'))
+        builder.add_from_file(path(__file__).parent
+                              .joinpath('glade',
+                                        'plugin_manager_dialog.glade'))
         self.window = builder.get_object('plugin_manager')
         self.vbox_plugins = builder.get_object('vbox_plugins')
         self.e = plugin_manager.PluginGlobals.env('microdrop.managed')

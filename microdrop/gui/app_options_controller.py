@@ -37,9 +37,8 @@ class AppOptionsController:
     def __init__(self):
         app = get_app()
         builder = gtk.Builder()
-        builder.add_from_file(os.path.join("gui",
-                                           "glade",
-                                           "app_options_dialog.glade"))
+        builder.add_from_file(path(__file__).parent
+                              .joinpath("glade", "app_options_dialog.glade"))
         self.dialog = builder.get_object("app_options_dialog")
         self.frame_core_plugins = builder.get_object("frame_core_plugins")
         self.core_plugins_vbox = builder.get_object("core_plugins_vbox")
