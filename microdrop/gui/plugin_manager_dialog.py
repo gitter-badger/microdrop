@@ -35,7 +35,7 @@ from jsonrpc.proxy import JSONRPCException
 from gui.plugin_download_dialog import PluginDownloadDialog
 from update_repository.plugins.proxy import PluginRepository
 from app_context import get_app
-from utility import Version
+from utility import Version, base_path
 from utility.gui import yesno
 from plugin_manager import get_service_instance_by_name, get_plugin_package_name
 
@@ -43,7 +43,9 @@ from plugin_manager import get_service_instance_by_name, get_plugin_package_name
 class PluginManagerDialog(object):
     def __init__(self):
         builder = gtk.Builder()
-        builder.add_from_file(path('gui').joinpath('glade', 'plugin_manager_dialog.glade'))
+        builder.add_from_file(base_path()
+                              .joinpath('gui', 'glade',
+                                        'plugin_manager_dialog.glade'))
         self.window = builder.get_object('plugin_manager')
         self.vbox_plugins = builder.get_object('vbox_plugins')
         builder.connect_signals(self)
