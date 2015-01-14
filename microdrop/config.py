@@ -19,6 +19,7 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 from shutil import ignore_patterns
+import warnings
 
 from path import path
 from configobj import ConfigObj, Section, flatten_errors
@@ -68,7 +69,7 @@ class Config():
         [plugins]
         # directory containing microdrop plugins
         directory = string(default=None)
-        
+
         # list of enabled plugins
         enabled = string_list(default=list())
 
@@ -144,19 +145,34 @@ class Config():
                     logger.error('The "%s" key in the section "%s" failed '
                                  'validation' % (key, ', '.join(section_list)))
                 else:
-                    logger.error('The following section was missing:%s ' % 
+                    logger.error('The following section was missing:%s ' %
                                  ', '.join(section_list))
             raise ValidationError
         self.data.filename = self.filename
         self._init_plugins_dir()
 
+    def _init_data_dir(self):
+        # If no user data directory is set in the configuration file, select
+        # default directory based on the operating system.
+        if os.name == 'nt':
+            default_data_dir = home_dir().joinpath('Microdrop')
+        else:
+            default_data_dir = home_dir().joinpath('.microdrop')
+        if 'data_dir' not in self.data:
+            self.data['data_dir'] = default_data_dir
+            warnings.warn('Using default MicroDrop user data path: %s' %
+                          default_data_dir)
+        if not path(self['data_dir']).isdir():
+            warnings.warn('MicroDrop user data directory does not exist.')
+            path(self['data_dir']).makedirs_p()
+            warnings.warn('Created MicroDrop user data directory: %s' %
+                          self['data_dir'])
+        logger.info('User data directory: %s' % self['data_dir'])
+
     def _init_plugins_dir(self):
-        if self.data['plugins']['directory'] is None:
-            if os.name == 'nt':
-                self.data['plugins']['directory'] = home_dir().joinpath('Microdrop', 'plugins')
-            else:
-                self.data['plugins']['directory'] = home_dir().joinpath('.microdrop', 'plugins')
-        plugins_directory = path(self.data['plugins']['directory'])            
+        self.data['plugins']['directory'] = (path(self['data_dir'])
+                                             .joinpath('plugins'))
+        plugins_directory = path(self.data['plugins']['directory'])
         plugins_directory.parent.makedirs_p()
         plugins = get_skeleton_path('plugins')
         if not plugins_directory.isdir():

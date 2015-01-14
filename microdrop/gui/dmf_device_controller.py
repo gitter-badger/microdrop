@@ -65,7 +65,7 @@ class DmfDeviceController(SingletonPlugin, AppDataController):
     implements(IPlugin)
     implements(IAppStatePlugin)
     implements(IVideoPlugin)
-    
+
     AppFields = Form.of(
         Integer.named('overlay_opacity').using(default=30, optional=True,
             validators=[ValueAtLeast(minimum=1), ValueAtMost(maximum=100)]),
@@ -77,7 +77,7 @@ class DmfDeviceController(SingletonPlugin, AppDataController):
     )
 
     def __init__(self):
-        self.name = "microdrop.gui.dmf_device_controller"        
+        self.name = "microdrop.gui.dmf_device_controller"
         self.view = DmfDeviceView()
         self.popup = None
         self.last_electrode_clicked = None
@@ -85,7 +85,7 @@ class DmfDeviceController(SingletonPlugin, AppDataController):
         self.last_frame_time = datetime.now()
         self.display_fps_inv = 0.1
         self.previous_device_dir = None
-        
+
     def on_app_options_changed(self, plugin_name):
         app = get_app()
         if plugin_name == self.name:
@@ -112,9 +112,9 @@ class DmfDeviceController(SingletonPlugin, AppDataController):
 
     def apply_device_dir(self, device_directory):
         app = get_app()
-        if not device_directory or \
-                (self.previous_device_dir and\
-                device_directory == self.previous_device_dir):
+        if (not device_directory or (self.previous_device_dir and
+                                     device_directory ==
+                                     self.previous_device_dir)):
             # If the data directory hasn't changed, we do nothing
             return False
 
@@ -170,9 +170,9 @@ directory)?''' % (device_directory, self.previous_device_dir))
         app.signals["on_menu_load_dmf_device_activate"] = self.on_load_dmf_device
         app.signals["on_menu_import_dmf_device_activate"] = \
                 self.on_import_dmf_device
-        app.signals["on_menu_rename_dmf_device_activate"] = self.on_rename_dmf_device 
-        app.signals["on_menu_save_dmf_device_activate"] = self.on_save_dmf_device 
-        app.signals["on_menu_save_dmf_device_as_activate"] = self.on_save_dmf_device_as 
+        app.signals["on_menu_rename_dmf_device_activate"] = self.on_rename_dmf_device
+        app.signals["on_menu_save_dmf_device_activate"] = self.on_save_dmf_device
+        app.signals["on_menu_save_dmf_device_as_activate"] = self.on_save_dmf_device_as
         app.signals["on_menu_edit_electrode_channels_activate"] = self.on_edit_electrode_channels
         app.signals["on_menu_edit_electrode_area_activate"] = self.on_edit_electrode_area
         app.dmf_device_controller = self
@@ -200,7 +200,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             result = yesno('Device %s has unsaved changes.  Save now?' % app.device.name)
             if result == gtk.RESPONSE_YES:
                 self.save_dmf_device()
-        
+
     def on_register(self, *args, **kwargs):
         if self.last_frame is None:
             return
@@ -224,7 +224,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             array.shape = (results.width, results.height)
             self.set_app_values(
                 dict(transform_matrix=yaml.dump(array.tolist())))
-    
+
     def get_default_options(self):
         return DmfDeviceOptions()
 
@@ -270,7 +270,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
         self.last_electrode_clicked = electrode
         if event.button == 1:
             state = options.state_of_channels
-            if len(electrode.channels): 
+            if len(electrode.channels):
                 for channel in electrode.channels:
                     if state[channel] > 0:
                         state[channel] = 0
@@ -286,7 +286,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
 
     def on_key_press(self, widget, data=None):
         pass
-    
+
     def load_device(self, filename):
         app = get_app()
         try:
@@ -301,7 +301,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
         except Exception, e:
             logger.error('Error loading device. %s: %s.' % (type(e), e))
             logger.debug(''.join(traceback.format_stack()))
-    
+
     def on_load_dmf_device(self, widget, data=None):
         app = get_app()
         directory = app.get_device_directory()
@@ -320,7 +320,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             self.load_device(filename)
         dialog.destroy()
         self._notify_observers_step_options_swapped()
-        
+
     def on_import_dmf_device(self, widget, data=None):
         app = get_app()
         dialog = gtk.FileChooserDialog(title="Import device",
@@ -332,7 +332,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
         filter = gtk.FileFilter()
         filter.set_name("*.svg")
         filter.add_pattern("*.svg")
-        dialog.add_filter(filter)  
+        dialog.add_filter(filter)
         dialog.set_default_response(gtk.RESPONSE_OK)
         response = dialog.run()
 
@@ -343,7 +343,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             emit_signal("on_dmf_device_created", [app.dmf_device])
         dialog.destroy()
         self._notify_observers_step_options_swapped()
-        
+
     def on_rename_dmf_device(self, widget, data=None):
         self.save_dmf_device(rename=True)
 
@@ -389,11 +389,11 @@ directory)?''' % (device_directory, self.previous_device_dir))
             if name != app.dmf_device.name:
                 app.dmf_device.name = name
                 emit_signal("on_dmf_device_created", app.dmf_device)
-            
+
             # save the device
             app.dmf_device.save(os.path.join(dest,"device"))
             app.state.trigger_event(app_state.DEVICE_SAVED)
-                    
+
     def on_edit_electrode_channels(self, widget, data=None):
         # TODO: set default value
         channel_list = ','.join([str(i) for i in self.last_electrode_clicked.channels])
@@ -419,7 +419,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
                 app.state.trigger_event(app_state.DEVICE_CHANGED)
             except:
                 logger.error("Invalid channel.")
-        
+
     def on_edit_electrode_area(self, widget, data=None):
         app = get_app()
         if app.dmf_device.scale is None:
@@ -435,7 +435,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
                     float(area)/self.last_electrode_clicked.area()
             else:
                 logger.error("Area value is invalid.")
-    
+
     def on_dmf_device_created(self, dmf_device):
         self.on_dmf_device_swapped(None, dmf_device)
 
@@ -486,7 +486,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             if channels:
                 # get the state(s) of the channel(s) connected to this electrode
                 states = state_of_channels[channels]
-    
+
                 # if all of the states are the same
                 if len(np.nonzero(states == states[0])[0]) == len(states):
                     if states[0] > 0:
@@ -495,7 +495,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
                         color = app.dmf_device.electrodes[id].path.color
                         self.view.electrode_color[id] = [c / 255. for c in color]
                 else:
-                    #TODO: this could be used for resistive heating 
+                    #TODO: this could be used for resistive heating
                     logger.error("not supported yet")
             else:
                 self.view.electrode_color[id] = (1,0,0)

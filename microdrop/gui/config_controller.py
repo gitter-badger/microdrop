@@ -37,7 +37,7 @@ PluginGlobals.push_env('microdrop')
 
 class ConfigController(SingletonPlugin):
     implements(IPlugin)
-        
+
     def __init__(self):
         self.name = "microdrop.gui.config_controller"
         self.app = None
@@ -57,15 +57,12 @@ class ConfigController(SingletonPlugin):
 
     def on_app_exit(self):
         self.app.config.save()
-        
+
     def _init_devices_dir(self):
         app = get_app()
         directory = app.get_device_directory()
         if directory is None:
-            if os.name == 'nt':
-                directory = home_dir().joinpath('Microdrop', 'devices')
-            else:
-                directory = home_dir().joinpath('.microdrop', 'devices')
+            directory = path(app.config['data_dir']).joinpath('devices')
             observers = ExtensionPoint(IPlugin)
             plugin_name = 'microdrop.gui.dmf_device_controller'
             service = observers.service(plugin_name)
@@ -75,13 +72,13 @@ class ConfigController(SingletonPlugin):
         devices = get_skeleton_path('devices')
         if not dmf_device_directory.isdir():
             devices.copytree(dmf_device_directory)
-                    
+
     def on_dmf_device_created(self, dmf_device):
         self.on_dmf_device_swapped(None, dmf_device)
 
     def on_dmf_device_swapped(self, old_dmf_device, dmf_device):
         self.app.config['dmf_device']['name'] = dmf_device.name
-        
+
     def on_protocol_created(self, protocol):
         self.app.config['protocol']['name'] = protocol.name
         self.app.config.save()
