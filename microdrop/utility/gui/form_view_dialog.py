@@ -60,7 +60,7 @@ class FormViewDialog(object):
         self.clear_form()
         self.vbox_form.pack_start(form_view.widget)
         self.window.set_default_response(gtk.RESPONSE_OK)
-        self.window.set_position(gtk.WIN_POS_CENTER_ON_PARENT)        
+        self.window.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         if parent:
             self.window.set_transient_for(parent)
             print '[FormViewDialog] set_transient_for(%s)' % parent

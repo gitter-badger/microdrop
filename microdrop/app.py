@@ -45,7 +45,7 @@ import app_state
 
 
 PluginGlobals.push_env('microdrop')
-    
+
 
 # these imports automatically load (and initialize) core singleton plugins
 import gui.app_state_controller
@@ -135,7 +135,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
                     self.version = f.readline().strip()
                 finally:
                     f.close()
-            
+
         self.realtime_mode = False
         self.running = False
         self.builder = gtk.Builder()
@@ -145,7 +145,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
         # these members are initialized by plugins
         self.experiment_log_controller = None
         self.config_controller = None
-        self.dmf_device_controller = None 
+        self.dmf_device_controller = None
         self.protocol_controller = None
         self.main_window_controller = None
         self.state = app_state.AppState()
@@ -227,7 +227,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
             return data
         else:
             return {}
-    
+
     def set_data(self, plugin_name, data):
         self.plugin_data[plugin_name] = data
 
@@ -253,7 +253,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
         plugin_manager.emit_signal('on_plugin_enable')
         self.update_log_file()
         FormViewDialog.default_parent = self.main_window_controller.view
-                
+
         self.builder.connect_signals(self.signals)
 
         observers = {}
@@ -294,7 +294,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
 
             # reapply the protocol name to the config file
             self.config['protocol']['name'] = protocol_name
-    
+
             # load the protocol
             if self.config['protocol']['name']:
                 directory = self.get_device_directory()
@@ -304,7 +304,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
                                             "protocols",
                                             self.config['protocol']['name'])
                     self.protocol_controller.load_protocol(filename)
-        
+
         self.main_window_controller.main()
 
     def _set_log_file_handler(self, log_file):
@@ -352,16 +352,16 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
 
     def on_dmf_device_swapped(self, old_dmf_device, dmf_device):
         self.dmf_device = dmf_device
-    
+
     def on_protocol_swapped(self, old_protocol, new_protocol):
         self.protocol = new_protocol
-    
+
     def on_step_options_changed(self, plugin, step_number):
         self.state.trigger_event(app_state.PROTOCOL_CHANGED)
-    
+
     def on_protocol_created(self, protocol):
         self.protocol = protocol
-    
+
     def on_experiment_log_created(self, experiment_log):
         self.experiment_log = experiment_log
 
@@ -400,11 +400,11 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
 
     def delete_steps(self, step_ids):
         self.protocol.delete_steps(step_ids)
-        
+
     def cut_steps(self, step_ids):
         self.copy_steps(step_ids)
         self.delete_steps(step_ids)
-        
+
 
 PluginGlobals.pop_env()
 

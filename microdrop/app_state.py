@@ -38,8 +38,8 @@ class NoDeviceNoProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            LOAD_DEVICE : DeviceNoProtocol, 
-            IMPORT_DEVICE : DeviceNoProtocol, 
+            LOAD_DEVICE : DeviceNoProtocol,
+            IMPORT_DEVICE : DeviceNoProtocol,
         }
 
 
@@ -51,12 +51,12 @@ class DeviceNoProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            LOAD_PROTOCOL : DeviceProtocol, 
-            NEW_PROTOCOL : DeviceProtocol, 
+            LOAD_PROTOCOL : DeviceProtocol,
+            NEW_PROTOCOL : DeviceProtocol,
             DEVICE_CHANGED : DirtyDeviceNoProtocol,
 
-            LOAD_DEVICE : DeviceNoProtocol, 
-            IMPORT_DEVICE : DeviceNoProtocol, 
+            LOAD_DEVICE : DeviceNoProtocol,
+            IMPORT_DEVICE : DeviceNoProtocol,
         }
 
 
@@ -68,14 +68,14 @@ class DeviceProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            LOAD_DEVICE : DeviceNoProtocol, 
-            IMPORT_DEVICE : DeviceNoProtocol, 
+            LOAD_DEVICE : DeviceNoProtocol,
+            IMPORT_DEVICE : DeviceNoProtocol,
 
-            LOAD_PROTOCOL : DeviceProtocol, 
-            NEW_PROTOCOL : DeviceProtocol, 
+            LOAD_PROTOCOL : DeviceProtocol,
+            NEW_PROTOCOL : DeviceProtocol,
 
-            DEVICE_CHANGED : DirtyDeviceProtocol, 
-            PROTOCOL_CHANGED : DeviceDirtyProtocol, 
+            DEVICE_CHANGED : DirtyDeviceProtocol,
+            PROTOCOL_CHANGED : DeviceDirtyProtocol,
         }
 
 
@@ -87,12 +87,12 @@ class DeviceDirtyProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            PROTOCOL_SAVED : DeviceProtocol, 
-            LOAD_PROTOCOL : DeviceProtocol, 
-            NEW_PROTOCOL : DeviceProtocol, 
+            PROTOCOL_SAVED : DeviceProtocol,
+            LOAD_PROTOCOL : DeviceProtocol,
+            NEW_PROTOCOL : DeviceProtocol,
 
-            LOAD_DEVICE : DeviceNoProtocol, 
-            IMPORT_DEVICE : DeviceNoProtocol, 
+            LOAD_DEVICE : DeviceNoProtocol,
+            IMPORT_DEVICE : DeviceNoProtocol,
             DEVICE_CHANGED : DirtyDeviceDirtyProtocol,
         }
 
@@ -105,11 +105,11 @@ class DirtyDeviceNoProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            LOAD_PROTOCOL : DirtyDeviceProtocol, 
-            NEW_PROTOCOL : DirtyDeviceProtocol, 
+            LOAD_PROTOCOL : DirtyDeviceProtocol,
+            NEW_PROTOCOL : DirtyDeviceProtocol,
 
-            LOAD_DEVICE : DeviceNoProtocol, 
-            IMPORT_DEVICE : DeviceNoProtocol, 
+            LOAD_DEVICE : DeviceNoProtocol,
+            IMPORT_DEVICE : DeviceNoProtocol,
         }
 
 
@@ -122,11 +122,11 @@ class DirtyDeviceProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            IMPORT_DEVICE : DeviceNoProtocol, 
-            DEVICE_CHANGED : DeviceNoProtocol, 
-            DEVICE_SAVED : DeviceProtocol, 
+            IMPORT_DEVICE : DeviceNoProtocol,
+            DEVICE_CHANGED : DeviceNoProtocol,
+            DEVICE_SAVED : DeviceProtocol,
 
-            PROTOCOL_CHANGED : DirtyDeviceDirtyProtocol, 
+            PROTOCOL_CHANGED : DirtyDeviceDirtyProtocol,
         }
 
 
@@ -139,13 +139,13 @@ class DirtyDeviceDirtyProtocol(StateWithCallback):
     @staticmethod
     def transitions():
         return {
-            IMPORT_DEVICE : DeviceNoProtocol, 
-            DEVICE_SAVED : DeviceDirtyProtocol, 
-            DEVICE_CHANGED : DirtyDeviceDirtyProtocol, 
+            IMPORT_DEVICE : DeviceNoProtocol,
+            DEVICE_SAVED : DeviceDirtyProtocol,
+            DEVICE_CHANGED : DirtyDeviceDirtyProtocol,
 
-            NEW_PROTOCOL : DirtyDeviceProtocol, 
-            PROTOCOL_SAVED : DirtyDeviceProtocol, 
-            PROTOCOL_CHANGED : DirtyDeviceDirtyProtocol, 
+            NEW_PROTOCOL : DirtyDeviceProtocol,
+            PROTOCOL_SAVED : DirtyDeviceProtocol,
+            PROTOCOL_CHANGED : DirtyDeviceDirtyProtocol,
         }
 
 

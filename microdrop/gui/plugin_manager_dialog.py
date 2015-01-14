@@ -237,7 +237,7 @@ Please start program again for changes to take effect.''')
         installed_plugin_path = path(app.config.data['plugins']['directory'])\
                 .joinpath(plugin_root.name)
         installed_metadata = self.get_plugin_info(installed_plugin_path)
-        
+
         if installed_metadata:
             logging.info('Currently installed: %s' % (installed_metadata,))
             if installed_metadata.version >= plugin_metadata.version:

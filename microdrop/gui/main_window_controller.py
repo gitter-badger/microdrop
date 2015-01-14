@@ -115,7 +115,7 @@ class MainWindowController(SingletonPlugin, AppDataController):
                                    .joinpath("glade", "about_dialog.glade"))
         app.main_window_controller = self
         self.protocol_list_view = None
-        
+
     def main(self):
         emit_signal("on_step_run")
         gtk.main()
@@ -173,7 +173,7 @@ class MainWindowController(SingletonPlugin, AppDataController):
                 'frequency': random.randint(1e3, 100e3),
                 'feedback_enabled': True})
     """
-    
+
     def on_menu_experiment_logs_activate(self, widget, data=None):
         app = get_app()
         app.experiment_log_controller.on_window_show(widget, data)
@@ -200,7 +200,7 @@ class MainWindowController(SingletonPlugin, AppDataController):
     def error(self, message, title="Error"):
         dialog = gtk.MessageDialog(self.view,
                                    gtk.DIALOG_DESTROY_WITH_PARENT,
-                                   gtk.MESSAGE_ERROR, 
+                                   gtk.MESSAGE_ERROR,
                                    gtk.BUTTONS_CLOSE, message)
         dialog.set_title(title)
         result = dialog.run()
@@ -210,7 +210,7 @@ class MainWindowController(SingletonPlugin, AppDataController):
     def warning(self, message, title="Warning"):
         dialog = gtk.MessageDialog(self.view,
                                    gtk.DIALOG_DESTROY_WITH_PARENT,
-                                   gtk.MESSAGE_WARNING, 
+                                   gtk.MESSAGE_WARNING,
                                    gtk.BUTTONS_CLOSE, message)
         dialog.set_title(title)
         result = dialog.run()
@@ -218,7 +218,7 @@ class MainWindowController(SingletonPlugin, AppDataController):
         return result
 
     def question(self, message, title=""):
-        dialog = gtk.MessageDialog(self.view, 
+        dialog = gtk.MessageDialog(self.view,
                                    gtk.DIALOG_DESTROY_WITH_PARENT,
                                    gtk.MESSAGE_QUESTION,
                                    gtk.BUTTONS_YES_NO, message)
@@ -228,9 +228,9 @@ class MainWindowController(SingletonPlugin, AppDataController):
         return result
 
     def info(self, message, title=""):
-        dialog = gtk.MessageDialog(self.view, 
+        dialog = gtk.MessageDialog(self.view,
                                    gtk.DIALOG_DESTROY_WITH_PARENT,
-                                   gtk.MESSAGE_INFO, 
+                                   gtk.MESSAGE_INFO,
                                    gtk.BUTTONS_CLOSE, message)
         dialog.set_title(title)
         result = dialog.run()

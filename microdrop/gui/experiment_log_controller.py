@@ -73,7 +73,7 @@ class ExperimentLogController(SingletonPlugin):
         self.window.set_title("Experiment logs")
         self.builder.connect_signals(self)
 
-    def update(self):        
+    def update(self):
         app = get_app()
         if not app.experiment_log:
             self._disable_gui_elements()
@@ -113,7 +113,7 @@ class ExperimentLogController(SingletonPlugin):
 
             self.builder.get_object("label_protocol"). \
                 set_text(label)
-            
+
             label = "Control board: "
             data = self.results.log.get("control board name")
             for val in data:
@@ -129,7 +129,7 @@ class ExperimentLogController(SingletonPlugin):
                     label += "\n\tFirmware version:%s" % val
             self.builder.get_object("label_control_board"). \
                 set_text(label)
-            
+
             label = "Time of experiment: "
             data = self.results.log.get("start time")
             for val in data:
@@ -137,7 +137,7 @@ class ExperimentLogController(SingletonPlugin):
                     label += time.ctime(val)
             self.builder.get_object("label_experiment_time"). \
                 set_text(label)
-            
+
             label = ""
             data = self.results.log.get("notes")
             for val in data:
@@ -184,7 +184,7 @@ class ExperimentLogController(SingletonPlugin):
         self.builder.get_object("button_load_device").set_sensitive(False)
         self.builder.get_object("button_load_protocol").set_sensitive(False)
         self.builder.get_object("textview_notes").set_sensitive(False)
-    
+
     def save(self):
         app = get_app()
         data = {"software version": app.version}
@@ -198,38 +198,38 @@ class ExperimentLogController(SingletonPlugin):
         # save the protocol and device
         app.protocol.save(os.path.join(log_path,"protocol"))
         app.dmf_device.save(os.path.join(log_path,"device"))
-        
+
         # create a new log
         experiment_log = ExperimentLog(app.experiment_log.directory)
         emit_signal("on_experiment_log_created", experiment_log)
 
     def on_window_show(self, widget, data=None):
         self.window.show()
-        
+
     def on_window_delete_event(self, widget, data=None):
         self.window.hide()
         return True
-        
+
     def on_combobox_log_files_changed(self, widget, data=None):
         self.update()
-    
+
     def on_button_load_device_clicked(self, widget, data=None):
         app = get_app()
         filename = path(os.path.join(app.experiment_log.directory,
                                      str(self.results.log.experiment_id),
-                                     'device')) 
+                                     'device'))
         try:
             app.dmf_device_controller.load_device(filename)
         except:
             logger.error("Could not open %s" % filename)
-        
+
     def on_button_load_protocol_clicked(self, widget, data=None):
         app = get_app()
         filename = path(os.path.join(app.experiment_log.directory,
                                      str(self.results.log.experiment_id),
                                      'protocol'))
         app.protocol_controller.load_protocol(filename)
-        
+
     def on_textview_notes_focus_out_event(self, widget, data=None):
         if len(self.results.log.data[0])==0:
             self.results.log.data.append({})
@@ -266,7 +266,7 @@ class ExperimentLogController(SingletonPlugin):
         # changing the combobox log files will force an update
         if len(log_files):
             self.combobox_log_files.set_active(len(log_files)-1)
-    
+
     def on_treeview_selection_changed(self, widget, data=None):
         selection = self.protocol_view.get_selection().get_selected_rows()
         selected_data = []
@@ -297,10 +297,10 @@ class ExperimentLogController(SingletonPlugin):
                                       self._cell_renderer_format,
                                       format_string)
         self.protocol_view.append_column(column)
-    
+
     def _cell_renderer_format(self, column, cell, model, iter, format_string):
         val = model.get_value(iter, column.get_sort_column_id())
         cell.set_property('text', format_string % val)
-        
+
 
 PluginGlobals.pop_env()
