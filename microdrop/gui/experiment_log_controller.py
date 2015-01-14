@@ -22,7 +22,7 @@ import time
 from collections import namedtuple
 
 import gtk
-from path import path
+from path_helpers import path
 
 from pygtkhelpers.delegates import SlaveView
 from experiment_log import ExperimentLog

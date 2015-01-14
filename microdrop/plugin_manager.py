@@ -28,7 +28,7 @@ import re
 from pyutilib.component.core import Interface, ExtensionPoint, implements, \
     Plugin, PluginGlobals
 import pyutilib.component.loader
-from path import path
+from path_helpers import path
 import gtk
 
 import utility

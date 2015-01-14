@@ -30,7 +30,7 @@ import numpy as np
 import gtk
 import yaml
 import gobject
-from path import path
+from path_helpers import path
 
 import protocol
 from protocol import Protocol

@@ -21,7 +21,7 @@ import logging
 
 import gtk
 from pygtkhelpers.ui.list_select import ListSelectView
-from path import path
+from path_helpers import path
 
 from update_repository.plugins.proxy import PluginRepository
 from app_context import get_app

@@ -23,7 +23,7 @@ import re
 
 import gtk
 gtk.gdk.threads_init()
-from path import path
+from path_helpers import path
 import yaml
 import webbrowser
 from jsonrpc.proxy import JSONRPCException

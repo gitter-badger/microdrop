@@ -25,7 +25,7 @@ import tarfile
 import tempfile
 
 import gtk
-from path import path
+from path_helpers import path
 import yaml
 from flatland import Form, String, Enum
 from jsonrpc.proxy import JSONRPCException

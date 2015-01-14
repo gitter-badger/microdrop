@@ -33,7 +33,7 @@ gtk.gdk.threads_init()
 import numpy as np
 from flatland import Form, Integer, String, Boolean
 from utility.gui import yesno
-from path import path
+from path_helpers import path
 import yaml
 from pygtkhelpers.ui.extra_widgets import Directory, Enum
 from pygtkhelpers.ui.extra_dialogs import text_entry_dialog
@@ -234,9 +234,9 @@ class DmfDeviceController(SingletonPlugin, AppDataController):
         return True
 
     def apply_device_dir(self, device_directory):
-        if not device_directory or \
-                (self.previous_device_dir and\
-                device_directory == self.previous_device_dir):
+        if (not device_directory or (self.previous_device_dir and
+                                     device_directory ==
+                                     self.previous_device_dir):
             # If the data directory hasn't changed, we do nothing
             return False
 

@@ -20,7 +20,7 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 import os
 
 import gtk
-from path import path
+from path_helpers import path
 
 from logger import logger
 from dmf_device import DmfDevice
@@ -37,7 +37,7 @@ PluginGlobals.push_env('microdrop')
 
 class ConfigController(SingletonPlugin):
     implements(IPlugin)
-        
+
     def __init__(self):
         self.name = "microdrop.gui.config_controller"
         self.app = None
@@ -60,15 +60,12 @@ class ConfigController(SingletonPlugin):
 
     def on_app_exit(self):
         self.app.config.save()
-        
+
     def _init_devices_dir(self):
         app = get_app()
         directory = app.get_device_directory()
         if directory is None:
-            if os.name == 'nt':
-                directory = home_dir().joinpath('Microdrop', 'devices')
-            else:
-                directory = home_dir().joinpath('.microdrop', 'devices')
+            directory = path(app.config['data_dir']).joinpath('devices')
             observers = ExtensionPoint(IPlugin)
             plugin_name = 'microdrop.gui.dmf_device_controller'
             service = observers.service(plugin_name)
@@ -78,7 +75,7 @@ class ConfigController(SingletonPlugin):
         devices = get_skeleton_path('devices')
         if not dmf_device_directory.isdir():
             devices.copytree(dmf_device_directory)
-                    
+
     def on_dmf_device_changed(self):
         device_name = None
         if self.app.dmf_device:
@@ -86,10 +83,10 @@ class ConfigController(SingletonPlugin):
         if self.app.config['dmf_device']['name'] != device_name:
             self.app.config['dmf_device']['name'] = device_name
             self.app.config.save()
-    
+
     def on_dmf_device_swapped(self, old_dmf_device, dmf_device):
         self.on_dmf_device_changed()
-        
+
     def on_protocol_changed(self):
         if self.app.protocol.name != self.app.config['protocol']['name']:
             self.app.config['protocol']['name'] = self.app.protocol.name
