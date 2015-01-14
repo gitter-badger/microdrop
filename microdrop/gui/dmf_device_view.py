@@ -23,7 +23,7 @@ from collections import namedtuple
 import gtk
 
 from app_context import get_app
-from opencv.safe_cv import cv
+from opencv_helpers.safe_cv import cv
 
 
 Dims = namedtuple('Dims', 'x y width height')
@@ -122,7 +122,7 @@ class DmfDeviceView:
         cr.restore()
 
 
-from opencv.registration_dialog import RegistrationDialog
+from opencv_helpers.registration_dialog import RegistrationDialog
 
 
 class DeviceRegistrationDialog(RegistrationDialog):
@@ -130,10 +130,6 @@ class DeviceRegistrationDialog(RegistrationDialog):
         super(DeviceRegistrationDialog, self).__init__(*args, **kwargs)
         self.device_image = device_image
         self.video_image = video_image
-
-    def get_glade_path(self):
-        from utility import base_path
-        return base_path().joinpath('opencv', 'glade', 'registration_demo.glade')
 
     def get_original_image(self):
         return self.device_image

@@ -32,13 +32,13 @@ from flatland import Form, Dict, String, Integer, Boolean, Float
 from flatland.validation import ValueAtLeast, ValueAtMost
 
 import microdrop
-from opencv.safe_cv import cv
-from opencv.frame_grabber import FrameGrabber
-from opencv.camera_capture import CameraCapture, CaptureError
+from opencv_helpers.safe_cv import cv
+from opencv_helpers.frame_grabber import FrameGrabber
+from opencv_helpers.camera_capture import CameraCapture, CaptureError
 from plugin_manager import IPlugin, SingletonPlugin, implements, \
     IVideoPlugin, PluginGlobals, ScheduleRequest, emit_signal
 from app_context import get_app
-from opencv.pixbuf import array2cv
+from opencv_helpers.pixbuf import array2cv
 from plugin_helpers import AppDataController
 
 

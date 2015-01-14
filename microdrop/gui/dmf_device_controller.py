@@ -42,7 +42,7 @@ from plugin_manager import ExtensionPoint, IPlugin, SingletonPlugin,\
         IAppStatePlugin
 from app_context import get_app
 from logger import logger
-from opencv.safe_cv import cv
+from opencv_helpers.safe_cv import cv
 from plugin_helpers import AppDataController
 from utility.pygtkhelpers_widgets import Directory
 from utility import is_float, copytree

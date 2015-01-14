@@ -40,7 +40,7 @@ from utility.pygtkhelpers_combined_fields import CombinedFields, CombinedRow,\
         RowFields
 from plugin_manager import ExtensionPoint, IPlugin, SingletonPlugin, \
     implements, PluginGlobals, ScheduleRequest, emit_signal
-from gui.textbuffer_with_undo import UndoableBuffer
+from textbuffer_with_undo import UndoableBuffer
 from app_context import get_app
 
 

@@ -39,7 +39,7 @@ from plugin_manager import ExtensionPoint, IPlugin, SingletonPlugin, \
         implements, PluginGlobals, ScheduleRequest, emit_signal,\
         get_service_class, get_service_instance, get_service_instance_by_name,\
         IAppStatePlugin
-from gui.textbuffer_with_undo import UndoableBuffer
+from textbuffer_with_undo import UndoableBuffer
 from app_context import get_app
 import app_state
 from utility.gui import yesno

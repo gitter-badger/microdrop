@@ -23,6 +23,7 @@ import time
 import webbrowser
 
 import gtk
+from path_helpers import path
 from flatland import Form, Boolean
 from pygtkhelpers.proxy import proxy_for
 

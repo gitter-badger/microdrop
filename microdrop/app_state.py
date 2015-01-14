@@ -1,7 +1,7 @@
 from collections import namedtuple
 
 # Import state machine package
-import opencv.statepy.state as state
+import statepy.state as state
 
 
 CANCEL = state.declareEventType('on_cancel')

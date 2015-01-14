@@ -5,7 +5,7 @@ from nose.tools import raises, eq_
 
 from dmf_device import DmfDevice
 from utility import Version
-from opencv.silence import Silence
+from opencv_helpers.silence import Silence
 from svg_model.svgload.svg_parser import SvgParser, parse_warning
 from svg_model.path_group import PathGroup
 
