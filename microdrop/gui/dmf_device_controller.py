@@ -30,7 +30,7 @@ import cairo
 from flatland import Form, Integer, String
 from flatland.validation import ValueAtLeast, ValueAtMost
 from utility.gui import yesno
-from path import path
+from path_helpers import path
 import yaml
 
 from dmf_device_view import DmfDeviceView, DeviceRegistrationDialog

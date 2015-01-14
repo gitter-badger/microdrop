@@ -20,7 +20,7 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 import os
 
 import gtk
-from path import path
+from path_helpers import path
 
 from logger import logger
 from dmf_device import DmfDevice

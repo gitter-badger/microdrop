@@ -25,7 +25,7 @@ import functools
 
 import gtk
 import numpy as np
-from path import path
+from path_helpers import path
 import yaml
 
 from utility import base_path, PROGRAM_LAUNCHED

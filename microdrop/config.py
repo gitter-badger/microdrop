@@ -21,7 +21,7 @@ import os
 from shutil import ignore_patterns
 import warnings
 
-from path import path
+from path_helpers import path
 from configobj import ConfigObj, Section, flatten_errors
 from validate import Validator
 

@@ -1,7 +1,7 @@
 import os
 import logging
 
-from path import path
+from path_helpers import path
 
 def app_data_dir():
     if os.name == 'nt':

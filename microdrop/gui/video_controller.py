@@ -27,7 +27,7 @@ from multiprocessing import Process, Value
 import numpy as np
 import gtk
 import gobject
-from path import path
+from path_helpers import path
 from flatland import Form, Dict, String, Integer, Boolean, Float
 from flatland.validation import ValueAtLeast, ValueAtMost
 

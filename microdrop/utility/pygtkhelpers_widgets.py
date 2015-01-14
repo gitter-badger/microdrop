@@ -1,7 +1,7 @@
 import logging
 
 import gtk
-from path import path
+from path_helpers import path
 from pygtkhelpers.utils import gsignal
 from pygtkhelpers.forms import view_widgets, element_views, ElementBuilder, widget_for, FormView
 from pygtkhelpers.proxy import widget_proxies, GObjectProxy, proxy_for

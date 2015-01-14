@@ -20,7 +20,7 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 import sys
 import re
 
-from path import path
+from path_helpers import path
 
 from .set_of_ints import SetOfInts
 
