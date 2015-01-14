@@ -78,8 +78,11 @@ class Config():
         level = option('debug', 'info', 'warning', 'error', default='warning')
         """
 
-    def __init__(self):
-        self.filename = self.default_filename
+    def __init__(self, filename=None):
+        if filename is None:
+            self.filename = self.default_filename
+        else:
+            self.filename = filename
         self.load()
 
     def __getitem__(self, i):
@@ -149,6 +152,7 @@ class Config():
                                  ', '.join(section_list))
             raise ValidationError
         self.data.filename = self.filename
+        self._init_data_dir()
         self._init_plugins_dir()
 
     def _init_data_dir(self):

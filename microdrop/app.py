@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 """
 
+import sys
 import os
 import subprocess
 import re
@@ -58,6 +59,22 @@ import gui.video_controller
 import gui.app_options_controller
 
 
+def parse_args(args=None):
+    """Parses arguments, returns (options, args)."""
+    from argparse import ArgumentParser
+
+    if args is None:
+        args = sys.argv
+
+    parser = ArgumentParser(description='MicroDrop: graphical user interface '
+                            'for the DropBot Digital Microfluidics control '
+                            'system.')
+    parser.add_argument('-c', '--config', type=path, default=None)
+
+    args = parser.parse_args()
+    return args
+
+
 def test(*args, **kwargs):
     print 'args=%s\nkwargs=%s' % (args, kwargs)
 
@@ -96,14 +113,19 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
             'microdrop.gui.video_controller',]
 
     def __init__(self):
+        args = parse_args()
+
+        print 'Arguments: %s' % args
+
         self.name = "microdrop.app"
         # get the version number
         self.version = ""
         try:
-            version = subprocess.Popen(['git','describe'],
-                          stdout=subprocess.PIPE,
-                          stderr=subprocess.PIPE,
-                          stdin=subprocess.PIPE).communicate()[0].rstrip()
+            version = (subprocess.Popen(['git','describe'],
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE,
+                                        stdin=subprocess.PIPE).communicate()[0]
+                       .rstrip())
             m = re.match('v(\d+)\.(\d+)-(\d+)', version)
             self.version = "%s.%s.%s" % (m.group(1), m.group(2), m.group(3))
         except:
@@ -133,7 +155,7 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
         self.log_file_handler = None
 
         # config model
-        self.config = Config()
+        self.config = Config(args.config)
 
         # Delete paths that were marked during the uninstallation of a plugin.
         # It is necessary to delay the deletion until here due to Windows file

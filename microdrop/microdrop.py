@@ -54,20 +54,26 @@ def except_handler(*args, **kwargs):
 
 
 if __name__ == '__main__':
+    gtk.threads_init()
+    gtk.gdk.threads_init()
+    gtk.gdk.threads_enter()
     if hasattr(sys, 'frozen'):
         print 'Enabling multiprocessing freeze support.'
         multiprocessing.freeze_support()
+
     utility.PROGRAM_LAUNCHED = True
+
     # Change directory to where microdrop.py resides, so this program can be
     # run from any directory.
     root_dir = utility.base_path().abspath()
-    from logger import logger
-    logger.info('Root directory: %s' % root_dir)
-    os.chdir(root_dir)
+
+    if root_dir not in sys.path:
+        sys.path.insert(0, str(root_dir))
 
     from app import App
     from app_context import get_app
-    
+
     my_app = get_app()
     sys.excepthook = except_handler
     my_app.run()
+    gtk.gdk.threads_leave()
