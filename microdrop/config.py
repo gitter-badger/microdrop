@@ -26,6 +26,7 @@ from configobj import ConfigObj, Section, flatten_errors
 from validate import Validator
 
 from logger import logger
+from utility import base_path
 from utility.user_paths import home_dir, app_data_dir, common_app_data_dir
 from app_context import get_app
 from plugin_manager import ExtensionPoint, IPlugin
@@ -40,7 +41,7 @@ def get_skeleton_path(dir_name):
                             % dir_name)
             source_dir = path(dir_name)
     else:
-        source_dir = path(dir_name)
+        source_dir = base_path().joinpath(dir_name)
     if not source_dir.isdir():
         raise IOError, '%s/ directory not available.' % source_dir
     return source_dir
