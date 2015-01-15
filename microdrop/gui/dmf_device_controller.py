@@ -236,12 +236,12 @@ class DmfDeviceController(SingletonPlugin, AppDataController):
     def apply_device_dir(self, device_directory):
         if (not device_directory or (self.previous_device_dir and
                                      device_directory ==
-                                     self.previous_device_dir):
+                                     self.previous_device_dir)):
             # If the data directory hasn't changed, we do nothing
             return False
 
         device_directory = path(device_directory)
-        device_directory.makedirs_p()
+        device_directory.abspath().makedirs_p()
         if self.previous_device_dir:
             if device_directory.listdir():
                 result = yesno('Merge?', '''\

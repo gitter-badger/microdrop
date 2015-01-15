@@ -118,7 +118,7 @@ class Config():
         if filename == None:
             filename = self.filename
         # make sure that the parent directory exists
-        path(filename).parent.makedirs_p()
+        path(filename).parent.abspath().makedirs_p()
         with open(filename, 'w') as f:
             self.data.write(outfile=f)
 
@@ -161,7 +161,7 @@ class Config():
                           default_data_dir)
         if not path(self['data_dir']).isdir():
             warnings.warn('MicroDrop user data directory does not exist.')
-            path(self['data_dir']).makedirs_p()
+            path(self['data_dir']).abspath().makedirs_p()
             warnings.warn('Created MicroDrop user data directory: %s' %
                           self['data_dir'])
         logger.info('User data directory: %s' % self['data_dir'])
@@ -170,7 +170,7 @@ class Config():
         self.data['plugins']['directory'] = (path(self['data_dir'])
                                              .joinpath('plugins'))
         plugins_directory = path(self.data['plugins']['directory'])
-        plugins_directory.parent.makedirs_p()
+        plugins_directory.parent.abspath().makedirs_p()
         plugins = get_skeleton_path('plugins')
         if not plugins_directory.isdir():
             # Copy plugins directory to app data directory, keeping symlinks
