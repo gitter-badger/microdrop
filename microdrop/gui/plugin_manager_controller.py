@@ -31,7 +31,7 @@ from flatland import Form, String, Enum
 from jsonrpc.proxy import JSONRPCException
 from jsonrpc.json import JSONDecodeException
 
-from update_repository.plugins.proxy import PluginRepository
+from application_repository.plugins.proxy import PluginRepository
 import plugin_manager
 from app_context import get_app
 from utility import Version

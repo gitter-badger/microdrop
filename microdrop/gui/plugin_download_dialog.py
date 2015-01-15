@@ -23,7 +23,7 @@ import gtk
 from pygtkhelpers.ui.list_select import ListSelectView
 from path_helpers import path
 
-from update_repository.plugins.proxy import PluginRepository
+from application_repository.plugins.proxy import PluginRepository
 from app_context import get_app
 from plugin_manager import get_service_instance_by_name
 

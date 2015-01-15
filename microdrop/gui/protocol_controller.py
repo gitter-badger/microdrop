@@ -37,7 +37,7 @@ from plugin_manager import ExtensionPoint, IPlugin, SingletonPlugin, \
         implements, PluginGlobals, ScheduleRequest, emit_signal,\
         get_service_class, get_service_instance, get_service_instance_by_name,\
         get_observers
-from gui.textbuffer_with_undo import UndoableBuffer
+from textbuffer_with_undo import UndoableBuffer
 from app_context import get_app
 from utility.gui import yesno, contains_pointer
 

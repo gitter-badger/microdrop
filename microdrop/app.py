@@ -43,7 +43,7 @@ import plugin_manager
 from plugin_helpers import AppDataController, get_plugin_info
 from logger import logger, CustomHandler, logging, DEBUG, INFO, WARNING, \
     ERROR, CRITICAL
-from update_repository.application.proxy import AppRepository
+from application_repository.application.proxy import AppRepository
 
 
 PluginGlobals.push_env('microdrop')
