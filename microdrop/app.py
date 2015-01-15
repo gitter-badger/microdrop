@@ -129,9 +129,10 @@ INFO:  <Plugin VideoController 'microdrop.gui.video_controller'>
             m = re.match('v(\d+)\.(\d+)-(\d+)', version)
             self.version = "%s.%s.%s" % (m.group(1), m.group(2), m.group(3))
         except:
-            if os.path.isfile('version.txt'):
+            filename = path(__file__).parent.joinpath('version.txt')
+            if filename.isfile():
                 try:
-                    f = open('version.txt', 'r')
+                    f = filename.open('r')
                     self.version = f.readline().strip()
                 finally:
                     f.close()
