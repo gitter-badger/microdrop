@@ -1,7 +1,7 @@
 import re
 from glob import glob
 
-from path import path
+from path_helpers import path
 from py2deb import Py2deb
 
 from site_scons.git_util import GitUtil

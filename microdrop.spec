@@ -1,5 +1,5 @@
 # -*- mode: python -*-
-from path import path
+from path_helpers import path
 import pygtkhelpers
 import flatland
 import matplotlib
