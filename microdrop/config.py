@@ -40,7 +40,7 @@ def get_skeleton_path(dir_name):
                             % dir_name)
             source_dir = path(dir_name)
     else:
-        source_dir = path(dir_name)
+        source_dir = path(__file__).parent.joinpath(dir_name)
     if not source_dir.isdir():
         raise IOError, '%s/ directory not available.' % source_dir
     return source_dir
@@ -125,7 +125,7 @@ class Config():
         if filename == None:
             filename = self.filename
         # make sure that the parent directory exists
-        path(filename).parent.makedirs_p()
+        path(filename).parent.abspath().makedirs_p()
         with open(filename, 'w') as f:
             self.data.write(outfile=f)
 
@@ -168,7 +168,7 @@ class Config():
                           default_data_dir)
         if not path(self['data_dir']).isdir():
             warnings.warn('MicroDrop user data directory does not exist.')
-            path(self['data_dir']).makedirs_p()
+            path(self['data_dir']).abspath().makedirs_p()
             warnings.warn('Created MicroDrop user data directory: %s' %
                           self['data_dir'])
         logger.info('User data directory: %s' % self['data_dir'])
@@ -184,4 +184,4 @@ class Config():
             # intact.  If we don't keep symlinks as they are, we might end up
             # with infinite recursion.
             plugins.copytree(plugins_directory, symlinks=True,
-                ignore=ignore_patterns('*.pyc'))
+                             ignore=ignore_patterns('*.pyc'))

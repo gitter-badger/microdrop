@@ -21,23 +21,18 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 import os
 import sys
 
-try:
-    import utility as utility
-except ImportError:
-    from path import path
-    import microdrop
+from path_helpers import path
 
-    sys.path.append(path(microdrop.__file__).parent)
-    import utility as utility
+# Change directory to where microdrop.py resides, so this program can be
+# run from any directory.
+root_dir = str(path(__file__).parent.abspath())
 
-# The following imports ensure that the corresponding modules are processed
-# by PyInstaller when generating an EXE.
-import blinker
-import matplotlib
-from PIL import Image, ImageFont, ImageDraw
-import utility.uuid_minimal
+if root_dir not in sys.path:
+    sys.path.insert(0, root_dir)
+
+import utility as utility
+
 import gtk
-import scipy.optimize
 
 settings = gtk.settings_get_default()
 # Use a button ordering more consistent with Windows
@@ -54,13 +49,6 @@ def except_handler(*args, **kwargs):
 
 if __name__ == '__main__':
     utility.PROGRAM_LAUNCHED = True
-
-    # Change directory to where microdrop.py resides, so this program can be
-    # run from any directory.
-    root_dir = utility.base_path().abspath()
-
-    if root_dir not in sys.path:
-        sys.path.insert(0, str(root_dir))
 
     from app import App
     from app_context import get_app
