@@ -20,7 +20,6 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
 import sys
-import multiprocessing
 
 try:
     import utility as utility
@@ -54,13 +53,6 @@ def except_handler(*args, **kwargs):
 
 
 if __name__ == '__main__':
-    gtk.threads_init()
-    gtk.gdk.threads_init()
-    gtk.gdk.threads_enter()
-    if hasattr(sys, 'frozen'):
-        print 'Enabling multiprocessing freeze support.'
-        multiprocessing.freeze_support()
-
     utility.PROGRAM_LAUNCHED = True
 
     # Change directory to where microdrop.py resides, so this program can be
@@ -76,4 +68,3 @@ if __name__ == '__main__':
     my_app = get_app()
     sys.excepthook = except_handler
     my_app.run()
-    gtk.gdk.threads_leave()

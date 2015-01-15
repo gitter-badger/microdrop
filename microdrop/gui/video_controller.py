@@ -147,9 +147,6 @@ class VideoController(SingletonPlugin, AppDataController):
             # Process NumPy array frame data
             height, width, channels = frame.shape
             depth = {np.dtype('uint8'): 8}[frame.dtype]
-            logging.debug('[update_frame_data] type(frame)=%s '\
-                'height, width, channels, depth=(%s)'\
-                % (type(frame), (height, width, channels, depth)))
             gtk_frame = array2cv(frame)
             cv.CvtColor(gtk_frame, gtk_frame, cv.CV_BGR2RGB)
             emit_signal('on_new_frame', [gtk_frame, depth, frame_time],
