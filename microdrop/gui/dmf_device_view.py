@@ -64,16 +64,18 @@ class ElectrodeContextMenu(SlaveView):
 
     def on_edit_electrode_channels__activate(self, widget, data=None):
         # TODO: set default value
-        channel_list = ','.join([str(i) for i in self.last_electrode_clicked.channels])
+        channel_list = ','.join([str(i) for i in
+                                 self.last_electrode_clicked.channels])
         app = get_app()
         options = self.model.controller.get_step_options()
         state = options.state_of_channels
-        channel_list = text_entry_dialog('Channels', channel_list, 'Edit electrode channels')
+        channel_list = text_entry_dialog('Channels', channel_list,
+                                         'Edit electrode channels')
         if channel_list:
             channels = channel_list.split(',')
-            try: # convert to integers
-                if len(channels[0]):
-                    for i in range(0,len(channels)):
+            try:  # convert to integers
+                if channels[0]:
+                    for i in range(0, len(channels)):
                         channels[i] = int(channels[i])
                 else:
                     channels = []
@@ -81,11 +83,13 @@ class ElectrodeContextMenu(SlaveView):
                     # zero-pad channel states for all steps
                     for i in range(len(app.protocol)):
                         options = self.model.controller.get_step_options(i)
-                        options.state_of_channels = \
-                            np.concatenate([options.state_of_channels, \
-                                np.zeros(max(channels) - \
-                                len(options.state_of_channels)+1, int)])
-                        # don't emit signal for current step, we will do that after
+                        options.state_of_channels = np.concatenate(
+                            [options.state_of_channels,
+                             np.zeros(max(channels) -
+                                      len(options.state_of_channels) + 1,
+                                      dtype=int)])
+                        # Don't emit signal for current step, we will do that
+                        # after.
                         if i != app.protocol.current_step_number:
                             emit_signal('on_step_options_changed',
                                         [self.model.controller.name, i],
@@ -105,13 +109,13 @@ class ElectrodeContextMenu(SlaveView):
             area = ""
         else:
             area = self.last_electrode_clicked.area() * app.dmf_device.scale
-        area = text_entry_dialog("Area of electrode in mm<span "
-                "rise=\"5000\" font_size=\"smaller\">2</span>:", str(area),
-                        "Edit electrode area")
+        area = text_entry_dialog('Area of electrode in mm<span rise="5000" '
+                                 'font_size="smaller">2</span>:', str(area),
+                                 "Edit electrode area")
         if area:
             if is_float(area):
-                app.dmf_device.scale = \
-                    float(area)/self.last_electrode_clicked.area()
+                app.dmf_device.scale = (float(area) /
+                                        self.last_electrode_clicked.area())
             else:
                 logger.error("Area value is invalid.")
         emit_signal('on_dmf_device_changed')
@@ -368,11 +372,12 @@ class DmfDeviceView(GtkVideoView):
             # Assume mouse hasn't moved during button press-and-release, so
             # register as a click.
             self.on_electrode_click(electrode, event)
-        else:
+        elif self._most_recent_electrode_pressed is not None:
             # Mouse was dragged from original position, so register as a
             # drag.
             self.on_electrode_drag(self._most_recent_electrode_pressed, event,
                                    event.x - self._most_recent_x)
+        self._most_recent_electrode_pressed = None
         return True
 
     def on_electrode_click(self, electrode, event):

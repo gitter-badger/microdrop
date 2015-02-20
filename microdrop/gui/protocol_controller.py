@@ -136,7 +136,10 @@ Protocol is version %s, but only up to version %s is supported with this version
                                 del p[i].plugin_data[k]
                     self.save_protocol()
             self.modified = False
-            emit_signal("on_protocol_swapped", [app.protocol, p])
+            original_protocol = app.protocol
+            app.protocol = p
+            emit_signal("on_protocol_swapped", [original_protocol, p])
+            emit_signal("on_step_swapped", [0, 0])
 
     def create_protocol(self):
         old_protocol = get_app().protocol

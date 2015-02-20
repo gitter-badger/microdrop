@@ -18,6 +18,7 @@ along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
+import colorsys
 import traceback
 import shutil
 from copy import deepcopy
@@ -286,25 +287,30 @@ directory)?''' % (device_directory, self.previous_device_dir))
         app = get_app()
 
         self.event_box_dmf_device = app.builder.get_object(
-                'event_box_dmf_device')
+            'event_box_dmf_device')
         self.event_box_dmf_device.add(self.view.device_area)
         self.event_box_dmf_device.show_all()
-        self.view.connect('channel-state-changed',
-                lambda x, y: self._notify_observers_step_options_changed())
+        self.view.connect('channel-state-changed', lambda x, y:
+                          self._notify_observers_step_options_changed())
 
-        self.menu_load_dmf_device = app.builder.get_object('menu_load_dmf_device')
-        self.menu_import_dmf_device = app.builder.get_object('menu_import_dmf_device')
-        self.menu_rename_dmf_device = app.builder.get_object('menu_rename_dmf_device')
-        self.menu_save_dmf_device = app.builder.get_object('menu_save_dmf_device')
-        self.menu_save_dmf_device_as = app.builder.get_object('menu_save_dmf_device_as')
+        self.menu_load_dmf_device = app.builder.get_object(
+            'menu_load_dmf_device')
+        self.menu_import_dmf_device = app.builder.get_object(
+            'menu_import_dmf_device')
+        self.menu_rename_dmf_device = app.builder.get_object(
+            'menu_rename_dmf_device')
+        self.menu_save_dmf_device = app.builder.get_object(
+            'menu_save_dmf_device')
+        self.menu_save_dmf_device_as = app.builder.get_object(
+            'menu_save_dmf_device_as')
 
-        app.signals["on_menu_load_dmf_device_activate"] = self.on_load_dmf_device
-        app.signals["on_menu_import_dmf_device_activate"] = \
-                self.on_import_dmf_device
-        app.signals["on_menu_rename_dmf_device_activate"] = self.on_rename_dmf_device
-        app.signals["on_menu_save_dmf_device_activate"] = self.on_save_dmf_device
-        app.signals["on_menu_save_dmf_device_as_activate"] = self.on_save_dmf_device_as
-        app.signals["on_event_box_dmf_device_size_allocate"] = self.on_size_allocate
+        app.signals.update({
+            'on_menu_load_dmf_device_activate': self.on_load_dmf_device,
+            'on_menu_import_dmf_device_activate': self.on_import_dmf_device,
+            'on_menu_rename_dmf_device_activate': self.on_rename_dmf_device,
+            'on_menu_save_dmf_device_activate': self.on_save_dmf_device,
+            'on_menu_save_dmf_device_as_activate': self.on_save_dmf_device_as,
+            'on_event_box_dmf_device_size_allocate': self.on_size_allocate})
         app.dmf_device_controller = self
         defaults = self.get_default_app_options()
         data = app.get_data(self.name)
@@ -490,12 +496,17 @@ directory)?''' % (device_directory, self.previous_device_dir))
 
                 # If all of the states are the same.
                 if len(np.nonzero(states == states[0])[0]) == len(states):
+                    rgb = [c / 255.
+                           for c in app.dmf_device.electrodes[id].path.color]
                     if states[0] > 0:
-                        self.view.electrode_color[id] = (1, 1, 1)
-                    else:
-                        color = app.dmf_device.electrodes[id].path.color
-                        self.view.electrode_color[id] = [c / 255.
-                                                         for c in color]
+                        hls = colorsys.rgb_to_hls(*rgb)
+                        lightness_window = 0.45
+                        rgb = colorsys.hls_to_rgb(hls[0],
+                                                  1 - lightness_window +
+                                                  (lightness_window * states[0]
+                                                   / 100.),
+                                                  hls[2])
+                    self.view.electrode_color[id] = rgb
                 else:
                     # TODO: This could be used for resistive heating.
                     logger.error("not supported yet")

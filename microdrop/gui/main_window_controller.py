@@ -80,28 +80,29 @@ class MainWindowController(SingletonPlugin):
         self.view.set_icon_from_file(
             pkg_resources.resource_filename('microdrop', 'microdrop.ico'))
         DEFAULTS.parent_widget = self.view
-        self.label_control_board_status = app.builder.get_object("label_control_board_status")
-        self.label_experiment_id = app.builder.get_object("label_experiment_id")
-        self.label_device_name = app.builder.get_object("label_device_name")
-        self.label_protocol_name = app.builder.get_object("label_protocol_name")
-        self.checkbutton_realtime_mode = app.builder.get_object("checkbutton_realtime_mode")
-        self.label_electrode_channel = app.builder.get_object("label_electrode_channel")
-        self.label_electrode_level = app.builder.get_object("label_electrode_level")
-        self.menu_tools = app.builder.get_object("menu_tools")
-        self.menu_view = app.builder.get_object("menu_view")
-        self.menu_experiment_logs = app.builder.get_object("menu_experiment_logs")
+        for gui_object_label in ('label_control_board_status',
+                                 'label_experiment_id', 'label_device_name',
+                                 'label_protocol_name',
+                                 'checkbutton_realtime_mode',
+                                 'label_electrode_channel',
+                                 'label_electrode_level', 'menu_tools',
+                                 'menu_view', 'menu_experiment_logs'):
+            setattr(self, gui_object_label,
+                    app.builder.get_object(gui_object_label))
 
-        app.signals["on_menu_quit_activate"] = self.on_destroy
-        app.signals["on_menu_about_activate"] = self.on_about
-        app.signals["on_menu_online_help_activate"] = self.on_menu_online_help_activate
-        app.signals["on_menu_experiment_logs_activate"] = \
-            self.on_menu_experiment_logs_activate
-        app.signals["on_window_destroy"] = self.on_destroy
-        app.signals["on_window_delete_event"] = self.on_delete_event
-        app.signals["on_checkbutton_realtime_mode_button_press_event"] = \
-                self.on_realtime_mode_toggled
-        app.signals["on_menu_app_options_activate"] = self.on_menu_app_options_activate
-        app.signals["on_menu_manage_plugins_activate"] = self.on_menu_manage_plugins_activate
+        app.signals.update({
+            'on_checkbutton_realtime_mode_button_press_event':
+            self.on_realtime_mode_toggled,
+            'on_menu_about_activate': self.on_about,
+            'on_menu_app_options_activate': self.on_menu_app_options_activate,
+            'on_menu_experiment_logs_activate':
+            self.on_menu_experiment_logs_activate,
+            'on_menu_manage_plugins_activate':
+            self.on_menu_manage_plugins_activate,
+            'on_menu_online_help_activate': self.on_menu_online_help_activate,
+            'on_menu_quit_activate': self.on_destroy,
+            'on_window_delete_event': self.on_delete_event,
+            'on_window_destroy': self.on_destroy})
 
         self.builder = gtk.Builder()
         self.builder.add_from_file(glade_path().joinpath('about_dialog.glade'))
