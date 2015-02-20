@@ -149,8 +149,8 @@ Protocol is version %s, but only up to version %s is supported with this version
 
     def on_protocol_swapped(self, old_protocol, protocol):
         protocol.plugin_fields = emit_signal('get_step_fields')
-        logging.debug('[ProtocolController] on_protocol_swapped(): plugin_fields=%s' % protocol.plugin_fields)
-        self.run_step()
+        logging.debug('[ProtocolController] on_protocol_swapped(): '
+                      'plugin_fields=%s' % protocol.plugin_fields)
 
     def on_plugin_enable(self):
         app = get_app()
