@@ -124,7 +124,7 @@ class ElectrodeContextMenu(SlaveView):
         self.emit('registration-request')
 
     def popup(self, state_of_channels, electrode, button, time,
-            register_enabled=True):
+              register_enabled=True):
         self.last_electrode_clicked = electrode
         self.state_of_channels = state_of_channels
         self.register_device.set_property('sensitive', register_enabled)
@@ -208,11 +208,12 @@ class DmfDeviceView(GtkVideoView):
         app = get_app()
         if app.dmf_device:
             d = DrawQueue()
-            x, y, device_width, device_height = app.dmf_device.get_bounding_box()
+            x, y, device_width, device_height = (app.dmf_device
+                                                 .get_bounding_box())
             self.svg_space = CartesianSpace(device_width, device_height,
-                    offset=(x, y))
+                                            offset=(x, y))
             padding = 20
-            if width/device_width < height/device_height:
+            if width / device_width < height / device_height:
                 drawing_width = width - 2 * padding
                 drawing_height = drawing_width * (device_height / device_width)
                 drawing_x = padding
@@ -223,9 +224,9 @@ class DmfDeviceView(GtkVideoView):
                 drawing_x = (width - drawing_width) / 2
                 drawing_y = padding
             self.drawing_space = CartesianSpace(drawing_width, drawing_height,
-                offset=(drawing_x, drawing_y))
-            scale = np.array(self.drawing_space.dims) / np.array(
-                    self.svg_space.dims)
+                                                offset=(drawing_x, drawing_y))
+            scale = (np.array(self.drawing_space.dims) /
+                     np.array(self.svg_space.dims))
             d.translate(*self.drawing_space._offset)
             d.scale(*scale)
             d.translate(*(-np.array(self.svg_space._offset)))
@@ -338,12 +339,12 @@ class DmfDeviceView(GtkVideoView):
             # Get the click coordinates, normalized to the bounding box of the
             # DMF device drawing (NOT the entire device drawing area)
             normalized_coords = self.drawing_space.normalized_coords(
-                    *event.get_coords())
+                *event.get_coords())
             # Conduct a point query in the SVG space to see which electrode (if
             # any) was clicked.  Note that the normalized coordinates are
             # translated to get the coordinates relative to the SVG space.
             shape = app.dmf_device.body_group.space.point_query_first(
-                    self.svg_space.translate_normalized(*normalized_coords))
+                self.svg_space.translate_normalized(*normalized_coords))
             if shape:
                 return app.dmf_device.get_electrode_from_body(shape.body)
         return None
@@ -423,12 +424,15 @@ class DmfDeviceView(GtkVideoView):
     def on_register(self, *args, **kwargs):
         if self._proxy is not None:
             self._proxy.request_frame()
+
             def process_frame(self):
                 #draw_queue = self.get_draw_queue(*self.view_space.dims)
                 frame = self._proxy.get_frame()
                 if frame is not None:
-                    cv_im = cv.CreateMat(frame.shape[0], frame.shape[1], cv.CV_8UC3)
-                    cv.SetData(cv_im, frame.tostring(), frame.shape[1] * frame.shape[2])
+                    cv_im = cv.CreateMat(frame.shape[0], frame.shape[1],
+                                         cv.CV_8UC3)
+                    cv.SetData(cv_im, frame.tostring(), frame.shape[1] *
+                               frame.shape[2])
                     cv_scaled = cv.CreateMat(500, 600, cv.CV_8UC3)
                     cv.Resize(cv_im, cv_scaled)
                     self._on_register_frame_grabbed(cv_scaled)
@@ -464,7 +468,7 @@ class DmfDeviceView(GtkVideoView):
             results = dialog.run()
             if results:
                 array = np.fromstring(results.tostring(), dtype='float32',
-                        count=results.width * results.height)
+                                      count=results.width * results.height)
                 # If the transform matrix is the default, set it to the
                 # identity matrix.  This will simply reset the transform.
                 if array.flatten()[-1] == 1 and array.sum() == 1:

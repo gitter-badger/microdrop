@@ -337,8 +337,8 @@ directory)?''' % (device_directory, self.previous_device_dir))
         self._record_path = str(path(record_path).abspath())
         self._recording = False
         self.reset_video()
-        logging.info('[DmfDeviceController] recording to: {}'.format(
-                self._record_path))
+        logging.info('[DmfDeviceController] recording to: %s',
+                     self._record_path)
 
     def on_protocol_run(self):
         app = get_app()
@@ -573,7 +573,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
                 dmf_device = DmfDevice.load_svg(filename)
                 self.modified = True
                 emit_signal("on_dmf_device_swapped", [app.dmf_device,
-                                                          dmf_device])
+                                                      dmf_device])
             except Exception, e:
                 logger.error('Error importing device. %s' % e)
                 logger.info(''.join(traceback.format_exc()))

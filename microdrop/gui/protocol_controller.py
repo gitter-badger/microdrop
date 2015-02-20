@@ -350,15 +350,15 @@ Protocol is version %s, but only up to version %s is supported with this version
 
     def run_step(self):
         app = get_app()
-        if app.protocol and app.dmf_device and \
-        (app.realtime_mode or app.running):
+        if (app.protocol and app.dmf_device and (app.realtime_mode or
+                                                 app.running)):
             if app.experiment_log:
                 app.experiment_log.add_step(app.protocol.current_step_number,
                                             app.protocol.current_step_attempt)
 
             self.waiting_for = get_observers("on_step_run", IPlugin).keys()
             logging.info("[ProcolController.run_step]: waiting for %s" %
-                          ", ".join(self.waiting_for))
+                         ", ".join(self.waiting_for))
             emit_signal("on_step_run")
 
     def on_step_complete(self, plugin_name, return_value=None):
@@ -433,10 +433,10 @@ Protocol is version %s, but only up to version %s is supported with this version
     def _update_labels(self):
         app = get_app()
         self.label_step_number.set_text("Step: %d/%d\tRepetition: %d/%d" %
-            (app.protocol.current_step_number + 1,
-            len(app.protocol.steps),
-            app.protocol.current_repetition + 1,
-            app.protocol.n_repeats))
+                                        (app.protocol.current_step_number + 1,
+                                         len(app.protocol.steps),
+                                         app.protocol.current_repetition + 1,
+                                         app.protocol.n_repeats))
         self.textentry_protocol_repeats.set_text(str(app.protocol.n_repeats))
 
     def on_dmf_device_swapped(self, old_dmf_device, dmf_device):
@@ -454,8 +454,8 @@ Protocol is version %s, but only up to version %s is supported with this version
     def on_app_exit(self):
         app = get_app()
         if self.modified:
-            result = yesno('Protocol %s has unsaved changes.  Save now?'\
-                    % app.protocol.name)
+            result = yesno('Protocol %s has unsaved changes.  Save now?' %
+                           app.protocol.name)
             if result == gtk.RESPONSE_YES:
                 self.save_protocol()
 

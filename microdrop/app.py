@@ -327,7 +327,7 @@ INFO:  <Plugin ProtocolGridController 'microdrop.gui.protocol_grid_controller'>
         return self.config['microdrop.app']['update_automatically']
 
     def update_check(self):
-        if self._update_setting() not in ('auto-update', 
+        if self._update_setting() not in ('auto-update',
                                           'check for updates, but ask before '
                                           'installing'):
             return
