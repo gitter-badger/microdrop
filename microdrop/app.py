@@ -21,6 +21,7 @@ import sys
 import os
 import re
 import subprocess
+import cPickle as pickle
 
 import gtk
 from path_helpers import path
@@ -211,7 +212,7 @@ INFO:  <Plugin ProtocolGridController 'microdrop.gui.protocol_grid_controller'>
         if deletions_path.isfile():
             requested_deletions = yaml.load(deletions_path.bytes())
             requested_deletions = map(path, requested_deletions)
-            
+
             logger.info('[App] processing requested deletions.')
             for p in requested_deletions:
                 try:
@@ -567,7 +568,7 @@ Would you like to download the latest version in your browser?''' %
             step_number = self.protocol.current_step_number + 1
         clipboard = gtk.clipboard_get()
         try:
-            new_steps = yaml.load(clipboard.wait_for_text())
+            new_steps = pickle.loads(clipboard.wait_for_text())
             for step in new_steps:
                 if not isinstance(step, Step):
                     # Invalid object type
@@ -581,7 +582,7 @@ Would you like to download the latest version in your browser?''' %
         steps = [self.protocol.steps[id] for id in step_ids]
         if steps:
             clipboard = gtk.clipboard_get()
-            clipboard.set_text(yaml.dump(steps))
+            clipboard.set_text(pickle.dumps(steps))
 
     def delete_steps(self, step_ids):
         self.protocol.delete_steps(step_ids)
