@@ -333,10 +333,16 @@ INFO:  <Plugin ProtocolGridController 'microdrop.gui.protocol_grid_controller'>
             return
 
         app_update_server_url = self.config.data.get(self.name, {}).get(
-                'server_url', 'http://microfluidics.utoronto.ca/update')
-        logger.debug('[APP UPDATE SERVER] server url: %s' % app_update_server_url)
+            'server_url', 'http://microfluidics.utoronto.ca/update')
+        logger.debug('[APP UPDATE SERVER] server url: %s',
+                     app_update_server_url)
         app_repository = AppRepository(app_update_server_url)
         current_version = Version.fromstring(self.version)
+        if current_version.tags:
+            logger.info('Version has the following tags, so skipping update '
+                        'check: %s', current_version.tags)
+            return
+
         try:
             latest_version = Version(**app_repository.latest_version('microdrop'))
         except (JSONRPCException, JSONDecodeException, IOError):
