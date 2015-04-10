@@ -279,8 +279,8 @@ class Protocol():
 
     def goto_step(self, step_number):
         logging.debug('[Protocol].goto_step(%s)' % step_number)
-        self.current_step_number = step_number
         original_step_number = self.current_step_number
+        self.current_step_number = step_number
         for plugin_name in self.current_step().plugins:
             emit_signal('on_step_options_swapped',
                     [plugin_name,
