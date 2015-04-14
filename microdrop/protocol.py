@@ -169,7 +169,7 @@ class Protocol():
         return self.plugin_data.get(plugin_name)
 
     def get_data(self, plugin_name):
-        logging.debug('[Protocol] plugin_data=%s' % self.plugin_data)
+        #logging.debug('[Protocol] plugin_data=%s' % self.plugin_data)
         return self.plugin_data.get(plugin_name)
 
     def set_data(self, plugin_name, data):
@@ -328,7 +328,7 @@ class Step(object):
         return None
 
     def get_data(self, plugin_name):
-        logging.debug('[Step] plugin_data=%s' % self.plugin_data)
+        #logging.debug('[Step] plugin_data=%s' % self.plugin_data)
         return self.plugin_data.get(plugin_name)
 
     def set_data(self, plugin_name, data):
