@@ -351,8 +351,8 @@ Protocol is version %s, but only up to version %s is supported with this version
 
     def run_step(self):
         app = get_app()
-        if (app.protocol and app.dmf_device and (app.realtime_mode or
-                                                 app.running)):
+        if app.protocol and app.dmf_device and (app.realtime_mode or
+                                                app.running):
             if app.experiment_log:
                 app.experiment_log.add_step(app.protocol.current_step_number,
                                             app.protocol.current_step_attempt)
@@ -369,7 +369,7 @@ Protocol is version %s, but only up to version %s is supported with this version
         if plugin_name in self.waiting_for:
             self.waiting_for.remove(plugin_name)
 
-        # check retern value
+        # Check return value
         if return_value=='Fail':
             self.pause_protocol()
             logging.error("Protocol failed.")
@@ -381,16 +381,17 @@ Protocol is version %s, but only up to version %s is supported with this version
         if len(self.waiting_for):
             logging.debug("[ProcolController].on_step_complete: still waiting "
                           "for %s" % ", ".join(self.waiting_for))
-        # if all plugins have completed the current step, go to the next step
+        # If all plugins have completed the current step, go to the next step
         elif app.running:
             if self.repeat_step:
                 app.protocol.current_step_attempt += 1
                 self.run_step()
             else:
                 app.protocol.current_step_attempt = 0
-                if app.protocol.current_step_number < len(app.protocol)-1:
+                if app.protocol.current_step_number < len(app.protocol) - 1:
                     self.on_next_step()
-                elif app.protocol.current_repetition < app.protocol.n_repeats-1:
+                elif (app.protocol.current_repetition <
+                      app.protocol.n_repeats - 1):
                     app.protocol.next_repetition()
                 else: # we're on the last step
                     self.pause_protocol()

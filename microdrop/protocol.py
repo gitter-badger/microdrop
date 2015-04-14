@@ -82,12 +82,12 @@ class Protocol():
         if out==None:
             raise TypeError
         out.filename = filename
-        
+
         # enable loading of old protocols that were loaded as relative packages
         # (i.e., not subpackages of microdrop).
         if str(out.__class__) == 'protocol.Protocol':
             out.__class__ = cls
-        
+
         # check type
         if out.__class__ != cls:
             raise TypeError, "File is wrong type: %s" % out.__class__
@@ -97,7 +97,7 @@ class Protocol():
 
         enabled_plugins = get_service_names(env='microdrop.managed') + \
             get_service_names('microdrop')
-        
+
         for k, v in out.plugin_data.items():
             if k in enabled_plugins:
                 try:
@@ -302,6 +302,7 @@ class Protocol():
                     print >> sio, [service.get_step_value(f) for f in fields]
             logging.debug(sio.getvalue())
         emit_signal('on_step_swapped', [original_step_number, step_number])
+
 
 class Step(object):
     def __init__(self, plugin_data=None):
