@@ -35,13 +35,12 @@ class ValidationError(Exception):
     pass
 
 
-class Config():
-    default_directory = app_data_dir()
+class Config(object):
     if os.name == 'nt':
-        default_directory /= path('microdrop')
+        default_config_directory = home_dir().joinpath('Microdrop')
     else:
-        default_directory /= path('.microdrop')
-    default_filename = default_directory / path('microdrop.ini')
+        default_config_directory = app_data_dir().joinpath('.microdrop')
+    default_config_path = default_config_directory / path('microdrop.ini')
     spec = """
         [dmf_device]
         # name of the most recently used DMF device
@@ -60,11 +59,7 @@ class Config():
         """
 
     def __init__(self, filename=None):
-        if filename is None:
-            self.filename = self.default_filename
-        else:
-            self.filename = filename
-        self.load()
+        self.load(filename)
 
     def __getitem__(self, i):
         return self.data[i]
@@ -82,17 +77,14 @@ class Config():
             ConfigObjError: There was a problem parsing the config file.
             ValidationError: There was a problem validating one or more fields.
         """
-        if filename:
-            logger.info("Loading config file from %s" % self.filename)
-            if not path(filename).exists():
-                raise IOError
-            self.filename = path(filename)
+        if filename is None:
+            logger.info("Using default configuration.")
+            self.filename = self.default_config_path
+        elif not path(filename).exists():
+            raise IOError
         else:
-            if self.filename.exists():
-                logger.info("Loading config file from %s" % self.filename)
-            else:
-                logger.info("Using default configuration.")
-
+            self.filename = filename
+            logger.info("Loading config file from %s" % self.filename)
         self.data = ConfigObj(self.filename, configspec=self.spec.split("\n"))
         self._validate()
 
@@ -139,12 +131,12 @@ class Config():
             default_data_dir = home_dir().joinpath('.microdrop')
         if 'data_dir' not in self.data:
             self.data['data_dir'] = default_data_dir
-            warnings.warn('Using default MicroDrop user data path: %s' %
+            warnings.warn('Using default Microdrop user data path: %s' %
                           default_data_dir)
         if not path(self['data_dir']).isdir():
-            warnings.warn('MicroDrop user data directory does not exist.')
+            warnings.warn('Microdrop user data directory does not exist.')
             path(self['data_dir']).makedirs_p()
-            warnings.warn('Created MicroDrop user data directory: %s' %
+            warnings.warn('Created Microdrop user data directory: %s' %
                           self['data_dir'])
 
     def _init_plugins_dir(self):

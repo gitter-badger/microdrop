@@ -513,7 +513,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             else:
                 # Assign the color _red_ to any electrode that has no assigned
                 # channels.
-                self.view.electrode_color[id] = (1, 0, 0)
+                self.view.electrode_color[id] = [1, 0, 0]
         self.view.update_draw_queue()
 
     def get_schedule_requests(self, function_name):
@@ -527,7 +527,9 @@ directory)?''' % (device_directory, self.previous_device_dir))
                     ScheduleRequest('microdrop.gui.main_window_controller',
                                     self.name)]
         elif function_name == 'on_dmf_device_swapped':
-            return [ScheduleRequest('microdrop.app', self.name)]
+            return [ScheduleRequest('microdrop.app', self.name),
+                    ScheduleRequest('microdrop.gui.protocol_controller',
+                                    self.name)]
         return []
 
     # GUI callbacks
