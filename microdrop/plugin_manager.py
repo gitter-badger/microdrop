@@ -16,12 +16,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 """
-
 import traceback
 import sys
 from StringIO import StringIO
 from contextlib import closing
-from collections import namedtuple
+from collections import namedtuple, OrderedDict
 import logging
 import re
 import os
@@ -181,7 +180,7 @@ def get_service_names(env='microdrop.managed'):
 
 def get_schedule(observers, function):
     # Query plugins for schedule requests for 'function'
-    schedule_requests = {}
+    schedule_requests = OrderedDict()
     for observer in observers.values():
         if hasattr(observer, 'get_schedule_requests'):
             schedule_requests[observer.name] =\
@@ -189,12 +188,13 @@ def get_schedule(observers, function):
 
     if schedule_requests:
         scheduler = task_scheduler.TaskScheduler(observers.keys())
-        for request in [r for name, requests in schedule_requests.items() for r in requests]:
+        for request in [r for name, requests in schedule_requests.items()
+                        for r in requests]:
             try:
                 scheduler.request_order(*request)
             except AssertionError:
-                logging.info('[PluginManager] emit_signal(%s) could not '\
-                        'add schedule request %s' % (function, request))
+                logging.info('[PluginManager] emit_signal(%s) could not add '
+                             'schedule request %s' % (function, request))
                 continue
         return scheduler.get_schedule()
     else:
@@ -202,7 +202,7 @@ def get_schedule(observers, function):
 
 
 def get_observers(function, interface=IPlugin):
-    observers = {}
+    observers = OrderedDict()
     for obs in ExtensionPoint(interface):
         if hasattr(obs, function):
             observers[obs.name] = obs
@@ -213,7 +213,7 @@ def emit_signal(function, args=None, interface=IPlugin):
     try:
         observers = get_observers(function, interface)
         schedule = get_schedule(observers, function)
-        return_codes = {}
+        return_codes = OrderedDict()
         for observer_name in schedule:
             observer = observers[observer_name]
             logging.debug('emit_signal: %s.%s()' % (observer.name, function))
@@ -241,8 +241,7 @@ def emit_signal(function, args=None, interface=IPlugin):
         return return_codes
     except Exception, why:
         logging.error(why)
-        #import pudb; pudb.set_trace()
-        return {}
+        return OrderedDict()
 
 
 def enable(name, env='microdrop.managed'):
