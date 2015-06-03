@@ -66,9 +66,10 @@ class ElectrodeContextMenu(SlaveView):
         # TODO: set default value
         channel_list = ','.join([str(i) for i in self.last_electrode_clicked.channels])
         app = get_app()
-        options = self.model.controller.get_step_options()
-        state = options.state_of_channels
-        channel_list = text_entry_dialog('Channels', channel_list, 'Edit electrode channels')
+        controller = app.dmf_device_controller
+        channel_states = controller.get_step_options().state_of_channels
+        channel_list = text_entry_dialog('Channels', channel_list,
+                                         'Edit electrode channels')
         if channel_list:
             channels = channel_list.split(',')
             try: # convert to integers
@@ -77,22 +78,23 @@ class ElectrodeContextMenu(SlaveView):
                         channels[i] = int(channels[i])
                 else:
                     channels = []
-                if channels and max(channels) >= len(state):
-                    # zero-pad channel states for all steps
+                if channels and max(channels) >= len(channel_states):
+                    # Zero-pad channel states for all steps
                     for i in range(len(app.protocol)):
-                        options = self.model.controller.get_step_options(i)
-                        options.state_of_channels = \
-                            np.concatenate([options.state_of_channels, \
-                                np.zeros(max(channels) - \
-                                len(options.state_of_channels)+1, int)])
-                        # don't emit signal for current step, we will do that after
+                        channel_states = (controller.get_step_options(i)
+                                          .state_of_channels)
+                        padded_states = np.zeros(max(channels), dtype=int)
+                        padded_states[:channel_states.shape[0]] = channel_states
+
+                        # Don't emit signal for current step, we will do that
+                        # after.
                         if i != app.protocol.current_step_number:
                             emit_signal('on_step_options_changed',
-                                        [self.model.controller.name, i],
+                                        [controller.name, i],
                                         interface=IPlugin)
                 self.last_electrode_clicked.channels = channels
                 emit_signal('on_step_options_changed',
-                            [self.model.controller.name,
+                            [controller.name,
                              app.protocol.current_step_number],
                             interface=IPlugin)
                 emit_signal('on_dmf_device_changed')
@@ -145,18 +147,17 @@ class DmfDeviceView(GtkVideoView):
     'transform-changed' is emitted whenever a video registration has
     been completed.
 
-    The signal 'channel-state-changed' is emitted whenever the state of
-    a channel has changed as a result of interaction with the device
-    view.
+    The signal 'channel-state-changed' is emitted whenever the state of a
+    channel has changed as a result of interaction with the device view.
     '''
     builder_path = base_path().joinpath('gui', 'glade',
                                         'dmf_device_view.glade')
 
-    gsignal('channel-state-changed', object)
+    gsignal('channel-state-changed', object, object)
     gsignal('transform-changed', object)
 
-    def __init__(self, dmf_device_controller, name):
-        self.controller = dmf_device_controller
+    def __init__(self, dmf_device_view_controller, name):
+        self.controller = dmf_device_view_controller
         self.last_frame_time = datetime.now()
         self.last_frame = None
         self.video_offset = (0, 0)
@@ -200,11 +201,12 @@ class DmfDeviceView(GtkVideoView):
         app = get_app()
         if app.dmf_device:
             d = DrawQueue()
-            x, y, device_width, device_height = app.dmf_device.get_bounding_box()
+            x, y, device_width, device_height = (app.dmf_device
+                                                 .get_bounding_box())
             self.svg_space = CartesianSpace(device_width, device_height,
-                    offset=(x, y))
+                                            offset=(x, y))
             padding = 20
-            if width/device_width < height/device_height:
+            if width / device_width < height / device_height:
                 drawing_width = width - 2 * padding
                 drawing_height = drawing_width * (device_height / device_width)
                 drawing_x = padding
@@ -215,9 +217,9 @@ class DmfDeviceView(GtkVideoView):
                 drawing_x = (width - drawing_width) / 2
                 drawing_y = padding
             self.drawing_space = CartesianSpace(drawing_width, drawing_height,
-                offset=(drawing_x, drawing_y))
-            scale = np.array(self.drawing_space.dims) / np.array(
-                    self.svg_space.dims)
+                                                offset=(drawing_x, drawing_y))
+            scale = (np.array(self.drawing_space.dims) /
+                     np.array(self.svg_space.dims))
             d.translate(*self.drawing_space._offset)
             d.scale(*scale)
             d.translate(*(-np.array(self.svg_space._offset)))
@@ -317,21 +319,24 @@ class DmfDeviceView(GtkVideoView):
         return True
 
     def on_electrode_click(self, electrode, event):
-        options = self.controller.get_step_options()
-        state = options.state_of_channels
+        app = get_app()
+        controller = app.dmf_device_controller
+        channel_states = controller.get_step_options().state_of_channels.copy()
         if event.button == 1:
             if len(electrode.channels):
                 for channel in electrode.channels:
-                    if state[channel] > 0:
-                        state[channel] = 0
+                    if channel_states[channel] > 0:
+                        channel_states[channel] = 0
                     else:
-                        state[channel] = 1
-                self.emit('channel-state-changed', electrode.channels[:])
+                        channel_states[channel] = 1
+                self.emit('channel-state-changed', electrode.channels[:],
+                          channel_states)
             else:
                 logger.error("No channel assigned to electrode.")
         elif event.button == 3:
-            self.popup.popup(state, electrode, event.button, event.time,
-                    register_enabled=self.controller.video_enabled)
+            self.popup.popup(channel_states, electrode, event.button,
+                             event.time,
+                             register_enabled=self.controller.video_enabled)
         return True
 
     def on_register(self, *args, **kwargs):
@@ -341,8 +346,10 @@ class DmfDeviceView(GtkVideoView):
                 #draw_queue = self.get_draw_queue(*self.view_space.dims)
                 frame = self._proxy.get_frame()
                 if frame is not None:
-                    cv_im = cv.CreateMat(frame.shape[0], frame.shape[1], cv.CV_8UC3)
-                    cv.SetData(cv_im, frame.tostring(), frame.shape[1] * frame.shape[2])
+                    cv_im = cv.CreateMat(frame.shape[0], frame.shape[1],
+                                         cv.CV_8UC3)
+                    cv.SetData(cv_im, frame.tostring(), frame.shape[1] *
+                               frame.shape[2])
                     cv_scaled = cv.CreateMat(500, 600, cv.CV_8UC3)
                     cv.Resize(cv_im, cv_scaled)
                     self._on_register_frame_grabbed(cv_scaled)
@@ -404,14 +411,6 @@ class DeviceRegistrationDialog(RegistrationDialog):
         super(DeviceRegistrationDialog, self).__init__(*args, **kwargs)
         self.device_image = device_image
         self.video_image = video_image
-
-    def get_glade_path(self):
-        assert(False)  # See TODO.
-        # TODO: Add `base_path` function to `opencv_helpers` and use it's path,
-        # since `opencv_helpers` does not belong to `microdrop` package
-        # anymore, so the following line is broken!
-        return base_path().joinpath('opencv_helpers', 'glade',
-                                    'registration_demo.glade')
 
     def get_original_image(self):
         return self.device_image

@@ -53,6 +53,7 @@ from .gui import experiment_log_controller
 from .gui import config_controller
 from .gui import main_window_controller
 from .gui import dmf_device_controller
+from .gui import dmf_device_view_controller
 from .gui import protocol_controller
 from .gui import protocol_grid_controller
 from .gui import plugin_manager_controller
