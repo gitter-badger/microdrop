@@ -234,6 +234,19 @@ class DmfDevice():
                 logger.info('[DmfDevice] upgrade to version %s' % self.version)
         # else the versions are equal and don't need to be upgraded
 
+    def dumps(self, format='pickle'):
+        body_group = self.body_group
+        try:
+            del self.body_group
+            if format=='pickle':
+                return pickle.dumps(self, -1)
+            elif format=='yaml':
+                return yaml.dumps(self)
+            else:
+                raise TypeError
+        finally:
+            self.body_group = body_group
+
     def save(self, filename, format='pickle'):
         body_group = self.body_group
         try:
@@ -273,8 +286,8 @@ class DmfDevice():
             if electrode.channels and max(electrode.channels) > max_channel:
                 max_channel = max(electrode.channels)
         return max_channel
-    
-    def actuated_area(self, state_of_all_channels):    
+
+    def actuated_area(self, state_of_all_channels):
         if self.scale is None:
             raise DeviceScaleNotSet()
         area = 0
