@@ -311,7 +311,57 @@ class DmfDevice():
                          for x,y in e.path.loops[0].verts], fill=color)
             dwg.add(p)
         return dwg.tostring()
-    
+
+    def get_svg_frame(self):
+        '''
+        Return a `pandas.DataFrame` containing the vertices for electrode
+        paths.
+
+        Each row of the frame corresponds to a single path vertex.  The
+        `groupby` method may be used, for example, to apply operations to
+        vertices on a per-path basis, such as calculating the bounding box.
+        '''
+        import pandas as pd
+        import numpy as np
+
+        frames = []
+
+        for i, e in self.electrodes.iteritems():
+            for loop_i, loop in enumerate(e.path.loops):
+                frame = pd.DataFrame(loop.verts, columns=['x', 'y'])
+                frame.insert(0, 'path_id', e.id)
+                frame.insert(1, 'loop_i', loop_i)
+                frame.insert(2, 'vert_i', np.arange(frame.shape[0]))
+                frames.append(frame)
+
+        return pd.concat(frames)
+
+    def get_electrode_channels(self):
+        '''
+        Return a `pandas.DataFrame` indexed by electrode identifier, where each
+        row maps an electrode to a channel connected to the electrode.
+
+        Notes
+        -----
+
+         - Each electrode corresponds to a closed path in the device drawing.
+         - Each channel index corresponds to a DMF device channel that may be
+           actuated independently.
+        '''
+        import pandas as pd
+
+        frames = []
+
+        for i, e in self.electrodes.iteritems():
+            if not e.channels:
+                continue
+            frame = pd.DataFrame(e.channels, columns=['channel_id'])
+            frame.insert(0, 'electrode_id', e.id)
+            frames.append(frame)
+
+        return pd.concat(frames).set_index('electrode_id')
+
+
 
 class Electrode:
     next_id = 0
