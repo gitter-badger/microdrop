@@ -1,5 +1,5 @@
 """
-Copyright 2011 Ryan Fobel
+Copyright 2011-2015 Ryan Fobel and Christian Fobel
 
 This file is part of Microdrop.
 
@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+from collections import OrderedDict
 import time
 try:
     import cPickle as pickle
@@ -45,7 +45,7 @@ class DeviceScaleNotSet(Exception):
 class DmfDevice():
     class_version = str(Version(0,3,0))
     def __init__(self):
-        self.electrodes = {}
+        self.electrodes = OrderedDict()
         self.x_min = np.Inf
         self.x_max = 0
         self.y_min = np.Inf
@@ -55,8 +55,8 @@ class DmfDevice():
         self.path_group = None  # svg_model.path_group.PathGroup
         self.version = self.class_version
         self.body_group = None
-        self.electrode_name_map = {}
-        self.name_electrode_map = {}
+        self.electrode_name_map = OrderedDict()
+        self.name_electrode_map = OrderedDict()
 
     def init_body_group(self):
         if self.path_group is None:
@@ -69,8 +69,8 @@ class DmfDevice():
 
     def add_path_group(self, path_group):
         self.path_group = path_group
-        self.electrode_name_map = {}
-        self.name_electrode_map = {}
+        self.electrode_name_map = OrderedDict()
+        self.name_electrode_map = OrderedDict()
         for name, p in self.path_group.paths.iteritems():
             eid = self.add_electrode_path(p)
             self.electrode_name_map[eid] = name
@@ -196,7 +196,7 @@ class DmfDevice():
                 boundary = Path([Loop([(x_min, y_min), (x_min, y_max),
                         (x_max, y_max), (x_max, y_min)])])
 
-                traced_paths = {}
+                traced_paths = OrderedDict()
                 tracer = LoopTracer()
                 for id, e in self.electrodes.iteritems():
                     try:
@@ -223,7 +223,7 @@ class DmfDevice():
                         pass
                 path_group = PathGroup(traced_paths, boundary)
                 electrodes = self.electrodes
-                self.electrodes = {}
+                self.electrodes = OrderedDict()
                 self.add_path_group(path_group)
 
                 for id, e in electrodes.iteritems():
