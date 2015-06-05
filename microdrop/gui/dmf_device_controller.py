@@ -21,7 +21,6 @@ import os
 import traceback
 import shutil
 from copy import deepcopy
-import logging
 try:
     import cPickle as pickle
 except ImportError:
@@ -29,13 +28,14 @@ except ImportError:
 
 import gtk
 import numpy as np
-from flatland import Form, Integer, String, Boolean
+from flatland import Form
 from path_helpers import path
-import yaml
-from pygtkhelpers.ui.extra_widgets import Directory, Enum
+from pygtkhelpers.ui.extra_widgets import Directory
 from pygtkhelpers.ui.extra_dialogs import text_entry_dialog
 from microdrop_utility.gui import yesno
 from microdrop_utility import copytree
+import zmq
+from zmq_helpers.utils import bind_to_random_port
 
 from ..app_context import get_app
 from ..dmf_device import DmfDevice
@@ -128,6 +128,8 @@ directory)?''' % (device_directory, self.previous_device_dir))
         return True
 
     def on_plugin_enable(self):
+        import pandas as pd
+
         AppDataController.on_plugin_enable(self)
         app = get_app()
 
@@ -149,6 +151,75 @@ directory)?''' % (device_directory, self.previous_device_dir))
         self.menu_rename_dmf_device.set_sensitive(False)
         self.menu_save_dmf_device.set_sensitive(False)
         self.menu_save_dmf_device_as.set_sensitive(False)
+        self.zmq_ctx = zmq.Context.instance()
+        self.df_socks = pd.DataFrame([zmq.Socket(self.zmq_ctx, zmq.REP),
+                                      zmq.Socket(self.zmq_ctx, zmq.PULL),
+                                      zmq.Socket(self.zmq_ctx, zmq.PUB)],
+                                     index=['rep', 'pull', 'pub'],
+                                     columns=['sock'])
+        self.df_socks['port'] = [bind_to_random_port(s)
+                                 for s in self.df_socks.sock]
+        for k, p in self.df_socks.port.iteritems():
+            logger.info('[DmfDeviceController].df_socks["%s"].port: %s' %
+                        (k, p))
+
+        def check_pull(self):
+            channel_states = None
+
+            while self.df_socks.sock.rep.poll(zmq.NOBLOCK):
+                raw = False
+                response = None
+                # Request is waiting
+                request = self.df_socks.sock.rep.recv_pyobj()
+                try:
+                    if request['command'] == 'sync':
+                        response = self.get_step_options().state_of_channels
+                    elif request['command'] == 'ports':
+                        response = self.df_socks.port
+                    elif request['command'] == 'electrode_name_map_keys':
+                        response = app.dmf_device.electrode_name_map.keys()
+                    elif request['command'] == 'electrode_name_map':
+                        response = app.dmf_device.electrode_name_map
+                    elif request['command'] == 'device_svg_frame':
+                        response = app.dmf_device.get_svg_frame()
+                    elif request['command'] == 'electrode_channels':
+                        response = app.dmf_device.get_electrode_channels()
+                except AttributeError:
+                    pass
+                self.df_socks.sock.rep.send_pyobj({'result': response,
+                                                   'raw': raw})
+
+            while self.df_socks.sock.pull.poll(zmq.NOBLOCK):
+                # Request is waiting
+                msg = self.df_socks.sock.pull.recv_pyobj()
+
+                if msg is None:
+                    continue
+
+                channel_states = pd.Series(self.get_step_options()
+                                           .state_of_channels, dtype=bool)
+                if not isinstance(msg, pd.Series):
+                    msg = pd.Series(msg, dtype=bool)
+                    assert(channel_states.shape[0] == msg.shape[0])
+
+                channel_states = channel_states[msg.index.tolist()]
+                diff_index = channel_states[channel_states != msg].index
+                diff_states = msg[diff_index.tolist()].astype(bool)
+
+                if diff_states.shape[0] > 0:
+                    # TODO: Use `StepOptionsController` mixin as base of
+                    # `DmfDeviceController` to provide `get_step_data` and
+                    # `set_step_data`.
+                    channel_states = self.get_step_options().state_of_channels
+                    channel_states[diff_states.index.tolist()] = diff_states
+                    logger.info('[DmfDeviceController] Update state from '
+                                'request. %s' % diff_states)
+                    self._notify_observers_step_options_changed(publish=False)
+                    self.df_socks.sock.pub.send_pyobj(diff_states)
+            return True
+
+        # Check for messages on ZeroMQ sockets every 10 ms.
+        self.check_timer_id = gtk.timeout_add(10, check_pull, self)
 
     def on_app_exit(self):
         self.save_check()
@@ -255,12 +326,24 @@ directory)?''' % (device_directory, self.previous_device_dir))
             # Reset modified status, since save acts as a checkpoint.
             self.modified = False
 
+    def on_step_swapped(self, old_step_number, step_number):
+        # An actuation state for each channel is maintained for each protocol
+        # step.  Therefore, trigger a notification whenever a new step is
+        # selected.
+        self._notify_observers_step_options_changed()
+
     # TODO: Use `StepOptionsController` mixin # to provide `get_step_data` and
     # `set_step_data` API.
-    def _notify_observers_step_options_changed(self):
+    def _notify_observers_step_options_changed(self, publish=True):
+        import pandas as pd
+
         app = get_app()
         if not app.dmf_device:
             return
+        if publish:
+            channel_states = pd.Series(self.get_step_options()
+                                       .state_of_channels, dtype=bool)
+            self.df_socks.sock.pub.send_pyobj(channel_states)
         emit_signal('on_step_options_changed',
                     [self.name, app.protocol.current_step_number],
                     interface=IPlugin)
