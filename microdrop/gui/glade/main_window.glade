@@ -52,12 +52,22 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-go-back</property>
   </object>
+  <object class="GtkImage" id="image_go_back2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-back</property>
+  </object>
   <object class="GtkImage" id="image_go_forward">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-go-forward</property>
   </object>
   <object class="GtkImage" id="image_go_forward1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-go-forward</property>
+  </object>
+  <object class="GtkImage" id="image_go_forward2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-go-forward</property>
@@ -72,12 +82,22 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-goto-first</property>
   </object>
+  <object class="GtkImage" id="image_goto_first2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-goto-first</property>
+  </object>
   <object class="GtkImage" id="image_goto_last">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-goto-last</property>
   </object>
   <object class="GtkImage" id="image_goto_last1">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-goto-last</property>
+  </object>
+  <object class="GtkImage" id="image_goto_last2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="stock">gtk-goto-last</property>
@@ -112,6 +132,11 @@
     <property name="can_focus">False</property>
     <property name="stock">gtk-media-play</property>
   </object>
+  <object class="GtkImage" id="image_play2">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-media-play</property>
+  </object>
   <object class="GtkImage" id="image_stop">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -122,7 +147,6 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">μDrop</property>
-    <property name="resizable">False</property>
     <signal name="destroy" handler="on_window_destroy" swapped="no"/>
     <signal name="delete-event" handler="on_window_delete_event" swapped="no"/>
     <child>
@@ -431,34 +455,6 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <child>
-              <object class="GtkEventBox" id="event_box_dmf_device">
-                <property name="width_request">500</property>
-                <property name="height_request">600</property>
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <signal name="size-allocate" handler="on_event_box_dmf_device_size_allocate" swapped="no"/>
-                <child>
-                  <placeholder/>
-                </child>
-              </object>
-              <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkVSeparator" id="vseparator1">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkVBox" id="vbox2">
                 <property name="width_request">500</property>
                 <property name="visible">True</property>
@@ -604,7 +600,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="image">image_goto_first1</property>
+                        <property name="image">image_goto_first2</property>
                         <signal name="button-release-event" handler="on_button_first_step_button_release_event" swapped="no"/>
                       </object>
                       <packing>
@@ -619,7 +615,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="image">image_go_back1</property>
+                        <property name="image">image_go_back2</property>
                         <signal name="button-release-event" handler="on_button_prev_step_button_release_event" swapped="no"/>
                       </object>
                       <packing>
@@ -634,7 +630,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="image">image_play1</property>
+                        <property name="image">image_play2</property>
                         <signal name="button-release-event" handler="on_button_run_protocol_button_release_event" swapped="no"/>
                       </object>
                       <packing>
@@ -649,7 +645,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="image">image_go_forward1</property>
+                        <property name="image">image_go_forward2</property>
                         <signal name="button-release-event" handler="on_button_next_step_button_release_event" swapped="no"/>
                       </object>
                       <packing>
@@ -664,7 +660,7 @@
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="image">image_goto_last1</property>
+                        <property name="image">image_goto_last2</property>
                         <signal name="button-release-event" handler="on_button_last_step_button_release_event" swapped="no"/>
                       </object>
                       <packing>
@@ -759,10 +755,10 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">False</property>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
                 <property name="padding">5</property>
-                <property name="position">2</property>
+                <property name="position">0</property>
               </packing>
             </child>
           </object>

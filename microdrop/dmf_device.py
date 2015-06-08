@@ -24,6 +24,7 @@ except ImportError:
     import pickle
 import warnings
 from math import sqrt
+import cStringIO as StringIO
 
 from logger import logger
 import numpy as np
@@ -136,6 +137,14 @@ class DmfDevice():
             try:
                 out = pickle.load(f)
                 logger.debug("Loaded object from pickle.")
+            except ImportError, e:
+                # Rewind file.
+                f.seek(0)
+                data = f.read()
+                f_data = StringIO.StringIO(data.replace('dmf_device',
+                                                        'microdrop'
+                                                        '.dmf_device'))
+                out = pickle.load(f_data)
             except Exception, e:
                 logger.debug("Not a valid pickle file. %s." % e)
         if out==None:

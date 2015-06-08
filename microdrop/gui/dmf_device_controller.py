@@ -219,7 +219,7 @@ directory)?''' % (device_directory, self.previous_device_dir))
             return True
 
         # Check for messages on ZeroMQ sockets every 10 ms.
-        self.check_timer_id = gtk.timeout_add(10, check_pull, self)
+        self.check_timer_id = gtk.timeout_add(100, check_pull, self)
 
     def on_app_exit(self):
         self.save_check()

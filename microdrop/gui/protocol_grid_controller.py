@@ -27,7 +27,8 @@ from microdrop_utility.gui import register_shortcuts
 
 from microdrop.plugin_manager import (ExtensionPoint, IPlugin, SingletonPlugin,
                                       implements, PluginGlobals,
-                                      ScheduleRequest, emit_signal)
+                                      ScheduleRequest, emit_signal,
+                                      get_observers)
 from microdrop.app_context import get_app
 
 
@@ -297,6 +298,12 @@ class ProtocolGridController(SingletonPlugin):
         elif function_name == 'on_protocol_swapped':
             # Ensure that the app's reference to the new protocol gets set
             return [ScheduleRequest('microdrop.app', self.name)]
+        elif function_name == 'on_step_swapped':
+            # Schedule handling of step swapped event until after all other
+            # plugins.
+            return [ScheduleRequest(p, self.name)
+                    for p in get_observers('on_step_swapped')
+                    if p != self.name]
         return []
 
     def on_step_created(self, step_number):
