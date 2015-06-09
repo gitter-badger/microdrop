@@ -18,7 +18,7 @@ install_requires = ['application_repository>=0.5', 'blinker', 'configobj',
                     'pyutilib==3.9.2706', 'pyyaml', 'pyzmq', 'svg_model',
                     'svgwrite', 'task_scheduler', 'wheeler.pygtkhelpers>=0.8',
                     'pip-helpers>=0.5', 'pandas', 'scipy', 'run-exe>=0.5',
-                    'ipython-helpers>=0.4']
+                    'ipython-helpers>=0.4', 'clutter-webcam-viewer>=0.3']
 
 
 setup(name='microdrop',
