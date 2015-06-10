@@ -16,7 +16,7 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with Microdrop.  If not, see <http://www.gnu.org/licenses/>.
 """
-
+import sys
 import os
 import traceback
 import shutil
@@ -30,6 +30,7 @@ import gtk
 import numpy as np
 from flatland import Form
 from path_helpers import path
+from pygtkhelpers.delegates import SlaveView
 from pygtkhelpers.ui.extra_widgets import Directory
 from pygtkhelpers.ui.extra_dialogs import text_entry_dialog
 from microdrop_utility.gui import yesno
@@ -55,6 +56,32 @@ class DmfDeviceOptions(object):
             self.state_of_channels = np.zeros(app.dmf_device.max_channel() + 1)
         else:
             self.state_of_channels = deepcopy(state_of_channels)
+
+
+class DmfDeviceInfoView(SlaveView):
+    def __init__(self, controller):
+        self.controller = controller
+        super(DmfDeviceInfoView, self).__init__()
+
+    def create_ui(self):
+        service_port = self.controller.df_socks.port.rep
+        box = gtk.HBox()
+        label = gtk.Label('Device controller (port=%s)' % service_port)
+
+        def launch_device_controller_viewer(button):
+            from subprocess import Popen, PIPE
+
+            args = [sys.executable, '-m', 'microdrop.bin.dmf_device_control',
+                    '-u', 'tcp://localhost:%s' %  service_port]
+            process = Popen(args, stdout=PIPE, stderr=PIPE)
+        open_ui_button = gtk.Button('Launch UI...')
+        open_ui_button.connect('clicked', launch_device_controller_viewer)
+
+        box.pack_start(label, False, False, 0)
+        box.pack_end(open_ui_button, False, False, 0)
+        box.show_all()
+
+        self.widget.pack_start(box, False, False, 0)
 
 
 # TODO: Use `StepOptionsController` mixin to provide `get_step_data` and
@@ -162,6 +189,13 @@ directory)?''' % (device_directory, self.previous_device_dir))
         for k, p in self.df_socks.port.iteritems():
             logger.info('[DmfDeviceController].df_socks["%s"].port: %s' %
                         (k, p))
+
+        self.device_info_view = DmfDeviceInfoView(self)
+        self.device_info_view.show()
+
+        box = app.main_window_controller.vbox2
+        box.pack_start(self.device_info_view.widget, False, False, 0)
+        box.reorder_child(self.device_info_view.widget, 0)
 
         def check_pull(self):
             channel_states = None
